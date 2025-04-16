@@ -18,14 +18,18 @@ export default function Home() {
 
       <div className="bg-black min-h-screen flex flex-col items-center justify-center p-4">
         <div className="max-w-2xl w-full text-center">
-          <Image 
-            src="/logo.jpg" 
-            alt="Ad Pro AI Logo" 
-            width={800}
-            height={224}
-            className="w-full max-w-md mx-auto mb-8"
-            priority
-          />
+          <div className="relative w-full max-w-md mx-auto mb-8 h-32">
+            <Image 
+              src="/logo.png" 
+              alt="Ad Pro AI Logo" 
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+              onError={(e) => {
+                e.target.src = '/logo.jpg';
+              }}
+            />
+          </div>
           <h1 className="text-4xl font-bold text-white mb-4">Coming Soon</h1>
           <p className="text-xl text-gray-300">We're working on something amazing. Stay tuned!</p>
         </div>
