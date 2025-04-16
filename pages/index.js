@@ -14,9 +14,16 @@ export default function Home() {
         <title>Ad Pro AI - Coming Soon</title>
         <meta name="description" content="Ad Pro AI - Coming Soon" />
         <link rel="icon" href="/favicon.png" />
+        <style jsx global>{`
+          body {
+            background-color: black;
+            margin: 0;
+            padding: 0;
+          }
+        `}</style>
       </Head>
 
-      <main className="bg-black min-h-screen flex flex-col items-center justify-center p-4">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="max-w-2xl w-full text-center">
           <div className="relative w-full max-w-md mx-auto mb-8 h-32">
             <Image 
