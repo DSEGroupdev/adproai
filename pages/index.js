@@ -12,7 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative w-64 h-64 mb-8">
+      <div className="relative w-[1500px] h-[1500px] mb-8">
         <Image
           src="/logo.png"
           alt="Ad Pro AI Logo"
