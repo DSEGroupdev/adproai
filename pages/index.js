@@ -5,16 +5,16 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <div className="bg-black min-h-screen flex flex-col items-center justify-center">
+    <div className="bg-black min-h-screen flex flex-col items-center justify-center p-8">
       <Head>
         <title>Ad Pro AI - Coming Soon</title>
         <meta name="description" content="Ad Pro AI - Coming Soon" />
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <div className="relative w-[1500px] h-[1500px] mb-8">
+      <div className="relative w-[900px] h-[900px] mb-12">
         <Image
-          src="/logo.png"
+          src="/logo.jpg"
           alt="Ad Pro AI Logo"
           fill
           style={{ objectFit: 'contain' }}
@@ -22,8 +22,12 @@ export default function Home() {
         />
       </div>
       
-      <h1 className="text-4xl font-bold text-white mb-4">Coming Soon</h1>
-      <p className="text-xl text-gray-300">We're working on something amazing</p>
+      <div className="text-center">
+        <h1 className="text-5xl font-bold text-[#D4AF37] mb-6 tracking-wide">COMING SOON</h1>
+        <p className="text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          We're crafting something extraordinary for marketers and entrepreneurs
+        </p>
+      </div>
     </div>
   );
 } 
