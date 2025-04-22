@@ -96,33 +96,26 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="space-y-8"
           >
-            <p className="text-[#D4AF37] text-lg font-medium mb-4">Join 100+ marketers using Ad Pro AI</p>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Write <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-              Generate compelling ad copy that converts using AI. Perfect for Facebook, Google, and more.
+            <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
+              Join 100+ marketers using Ad Pro AI
             </p>
-            <button
-              onClick={scrollToForm}
-              className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition flex items-center mx-auto"
-            >
-              Try it Free <FiArrowRight className="ml-2" />
-            </button>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
+              Generate <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Built for marketers, entrepreneurs, and agencies.<br />No writing skills needed.
+            </p>
+            <div className="pt-8">
+              <button
+                onClick={scrollToForm}
+                className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition transform hover:-translate-y-1 hover:shadow-xl"
+              >
+                Try it Free <FiArrowRight className="inline-block ml-2" />
+              </button>
+            </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Trusted By Section */}
-      <section className="py-12 bg-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-400 mb-8">Trusted by leading companies</p>
-          <div className="flex justify-center items-center space-x-12 opacity-50 grayscale">
-            <Image src="/company1.png" alt="Company 1" width={120} height={40} />
-            <Image src="/company2.png" alt="Company 2" width={120} height={40} />
-            <Image src="/company3.png" alt="Company 3" width={120} height={40} />
-          </div>
         </div>
       </section>
 
@@ -132,28 +125,31 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Why Choose Ad Pro AI</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <FiZap className="text-[#D4AF37] text-3xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Generate High-Converting Ad Copy</h3>
-              <p className="text-gray-400">Create compelling ad copy that drives results using advanced AI technology.</p>
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiZap className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10">Generate High-Converting Ad Copy</h3>
+              <p className="text-gray-400 relative z-10">Create compelling ad copy that drives results using advanced AI technology.</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <FiHelpCircle className="text-[#D4AF37] text-3xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Target the Right Audience</h3>
-              <p className="text-gray-400">Optimize your ads for specific demographics and interests.</p>
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiHelpCircle className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10">Target the Right Audience</h3>
+              <p className="text-gray-400 relative z-10">Optimize your ads for specific demographics and interests.</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <FiCopy className="text-[#D4AF37] text-3xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Boost ROI Instantly</h3>
-              <p className="text-gray-400">See immediate improvements in your ad performance and conversion rates.</p>
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiCopy className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10">Boost ROI Instantly</h3>
+              <p className="text-gray-400 relative z-10">See immediate improvements in your ad performance and conversion rates.</p>
             </motion.div>
           </div>
         </div>
@@ -164,27 +160,39 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-black font-bold">1</span>
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="text-center relative overflow-hidden group"
+            >
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                <span className="text-black font-bold text-xl">1</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Fill Out Form</h3>
-              <p className="text-gray-400">Enter your product details and preferences</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-black font-bold">2</span>
+              <h3 className="text-xl font-semibold mb-2 relative z-10">Fill Out Form</h3>
+              <p className="text-gray-400 relative z-10">Enter your product details and preferences</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="text-center relative overflow-hidden group"
+            >
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                <span className="text-black font-bold text-xl">2</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI Writes Copy</h3>
-              <p className="text-gray-400">Our AI generates optimized ad copy</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-black font-bold">3</span>
+              <h3 className="text-xl font-semibold mb-2 relative z-10">AI Writes Copy</h3>
+              <p className="text-gray-400 relative z-10">Our AI generates optimized ad copy</p>
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="text-center relative overflow-hidden group"
+            >
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                <span className="text-black font-bold text-xl">3</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Copy & Launch</h3>
-              <p className="text-gray-400">Use the generated copy in your ads</p>
-            </div>
+              <h3 className="text-xl font-semibold mb-2 relative z-10">Copy & Launch</h3>
+              <p className="text-gray-400 relative z-10">Use the generated copy in your ads</p>
+            </motion.div>
           </div>
         </div>
       </section>
