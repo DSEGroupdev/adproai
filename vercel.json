@@ -6,5 +6,8 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "public": true
 } 
