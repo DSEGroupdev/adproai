@@ -200,7 +200,7 @@ export default function Home() {
       {/* Generator Form Section */}
       <section id="generator-form" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+          <div className="bg-gray-900 p-8 rounded-xl border border-gray-800">
             <h2 className="text-2xl font-bold mb-6">Generate Your Ad Copy</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -214,8 +214,11 @@ export default function Home() {
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                       required
                     />
-                    <div className="absolute right-2 top-2">
-                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Enter your product or service name" />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Enter the name of your product or service
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -229,8 +232,11 @@ export default function Home() {
                       className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                       required
                     />
-                    <div className="absolute right-2 top-2">
-                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Describe your ideal customer" />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Describe your ideal customer (e.g., "Small business owners", "Tech enthusiasts")
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -245,20 +251,23 @@ export default function Home() {
                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                     required
                   />
-                  <div className="absolute right-2 top-2">
-                    <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Describe your product's features and benefits" />
+                  <div className="absolute right-2 top-2 group">
+                    <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                    <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                      Describe your product's key features and benefits
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">Tone</label>
                   <div className="relative">
                     <select
                       value={formData.tone}
                       onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
                       required
                     >
                       <option value="">Select Tone</option>
@@ -267,8 +276,14 @@ export default function Home() {
                       <option value="friendly">Friendly</option>
                       <option value="authoritative">Authoritative</option>
                     </select>
-                    <div className="absolute right-2 top-2">
-                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Choose the tone for your ad copy" />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Choose the tone that best matches your brand voice
+                      </div>
+                    </div>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <FiChevronRight className="text-gray-400 transform rotate-90" />
                     </div>
                   </div>
                 </div>
@@ -278,7 +293,7 @@ export default function Home() {
                     <select
                       value={formData.platform}
                       onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
                       required
                     >
                       <option value="">Select Platform</option>
@@ -287,25 +302,14 @@ export default function Home() {
                       <option value="instagram">Instagram</option>
                       <option value="linkedin">LinkedIn</option>
                     </select>
-                    <div className="absolute right-2 top-2">
-                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Select where your ad will appear" />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Select where your ad will appear
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Max Length</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={formData.maxLength}
-                      onChange={(e) => setFormData({ ...formData, maxLength: parseInt(e.target.value) })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
-                      min="50"
-                      max="500"
-                      required
-                    />
-                    <div className="absolute right-2 top-2">
-                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Set maximum character length for the ad copy" />
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <FiChevronRight className="text-gray-400 transform rotate-90" />
                     </div>
                   </div>
                 </div>
