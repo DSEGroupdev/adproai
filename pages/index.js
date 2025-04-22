@@ -3,40 +3,30 @@
 // Force deployment - April 16, 2024 - v2
 import Head from 'next/head'
 import Image from 'next/image'
-import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight } from 'react-icons/fi'
+import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight } from 'react-icons/fi'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 export default function Home() {
   const [formData, setFormData] = useState({
-    product: '',
-    audience: '',
-    usp: '',
-    tone: 'professional'
+    productName: '',
+    productDescription: '',
+    targetAudience: '',
+    tone: '',
+    platform: '',
+    maxLength: 100
   })
 
-  const [adOutput, setAdOutput] = useState(null)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  const tooltips = {
-    product: "What are you selling? Be specific (e.g., 'Social Media Management Software' or 'Online Fitness Coaching')",
-    audience: "Who is your ideal customer? Include demographics, interests, or pain points",
-    usp: "What makes your offering unique? List key benefits or features that set you apart",
-    tone: "How should your ad sound? Choose a tone that resonates with your audience"
-  }
-
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.id]: e.target.value
-    })
-  }
+  const [isLoading, setIsLoading] = useState(false)
+  const [result, setResult] = useState('')
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setIsGenerating(true)
-    
+    setIsLoading(true)
+    setError('')
+    setResult('')
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -46,63 +36,52 @@ export default function Home() {
         body: JSON.stringify(formData),
       })
 
+      if (!response.ok) {
+        throw new Error('Failed to generate ad copy')
+      }
+
       const data = await response.json()
-      setAdOutput(data)
-    } catch (error) {
-      console.error('Error generating ad:', error)
+      setResult(data.result)
+    } catch (err) {
+      setError(err.message)
     } finally {
-      setIsGenerating(false)
+      setIsLoading(false)
     }
   }
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   const scrollToForm = () => {
-    document.getElementById('adCopyForm')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const scrollToPricing = () => {
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const scrollToFeatures = () => {
-    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
+    document.getElementById('generator-form').scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="min-h-screen bg-black text-white">
       <Head>
         <title>Ad Pro AI - AI-Powered Ad Copy Generation</title>
-        <meta name="description" content="Generate high-converting ad copy in seconds with Ad Pro AI. Built for marketers, entrepreneurs, and agencies." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.png" />
+        <meta name="description" content="Generate high-converting ad copy in seconds with AI" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="relative w-[300px] h-[120px]">
-              <Image 
-                src="/logo.jpg" 
-                alt="Ad Pro AI Logo" 
-                fill
-                style={{ objectFit: 'contain' }}
-                priority
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex-shrink-0">
+              <Image
+                src="/logo.png"
+                alt="Ad Pro AI Logo"
+                width={200}
+                height={56}
+                className="h-14 w-auto"
               />
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <button onClick={scrollToFeatures} className="text-gray-300 hover:text-[#D4AF37] transition-colors">
-                Features
-              </button>
-              <button onClick={scrollToPricing} className="text-gray-300 hover:text-[#D4AF37] transition-colors">
-                Pricing
-              </button>
-              <button onClick={scrollToForm} className="bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
+              <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
+              <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
+              <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
+              <button
+                onClick={scrollToForm}
+                className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
                 Try it Free
               </button>
             </div>
@@ -111,392 +90,344 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-40 pb-20 border-b border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <p className="text-sm text-[#D4AF37] tracking-wider uppercase font-medium mb-8">
-              Join 100+ Marketers Using Ad Pro AI
-            </p>
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-8 text-white leading-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Generate High-Converting<br />Ad Copy in Seconds
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-[#D4AF37] text-lg font-medium mb-4">Join 100+ marketers using Ad Pro AI</p>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              Write <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
             </h1>
-            <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-              Built for marketers, entrepreneurs, and agencies.<br />No writing skills needed.
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+              Generate compelling ad copy that converts using AI. Perfect for Facebook, Google, and more.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <motion.button 
-                onClick={scrollToForm}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl w-full sm:w-auto flex items-center justify-center gap-2"
-              >
-                Try it Free
-                <FiZap className="w-5 h-5" />
-              </motion.button>
-            </div>
-            <div className="flex flex-wrap justify-center gap-8 text-gray-400 text-sm">
-              <div className="flex items-center gap-2">
-                <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                <span>Cancel anytime</span>
-              </div>
-            </div>
+            <button
+              onClick={scrollToForm}
+              className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition flex items-center mx-auto"
+            >
+              Try it Free <FiArrowRight className="ml-2" />
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Trusted By Section */}
+      <section className="py-12 bg-gray-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-400 mb-8">Trusted by leading companies</p>
+          <div className="flex justify-center items-center space-x-12 opacity-50 grayscale">
+            <Image src="/company1.png" alt="Company 1" width={120} height={40} />
+            <Image src="/company2.png" alt="Company 2" width={120} height={40} />
+            <Image src="/company3.png" alt="Company 3" width={120} height={40} />
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Powerful Features
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Everything you need to create high-converting ad copy
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Ad Pro AI</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
             >
-              <div className="text-[#D4AF37] text-4xl mb-4">
-                <FiZap />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">Lightning Fast</h3>
-              <p className="text-gray-400">Generate professional ad copy in seconds, not hours</p>
+              <FiZap className="text-[#D4AF37] text-3xl mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Generate High-Converting Ad Copy</h3>
+              <p className="text-gray-400">Create compelling ad copy that drives results using advanced AI technology.</p>
             </motion.div>
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
             >
-              <div className="text-[#D4AF37] text-4xl mb-4">
-                <FiCopy />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">Multiple Formats</h3>
-              <p className="text-gray-400">Create ads for any platform with optimized formats</p>
+              <FiHelpCircle className="text-[#D4AF37] text-3xl mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Target the Right Audience</h3>
+              <p className="text-gray-400">Optimize your ads for specific demographics and interests.</p>
             </motion.div>
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="bg-gray-900/50 p-8 rounded-xl border border-gray-800"
             >
-              <div className="text-[#D4AF37] text-4xl mb-4">
-                <FiCheck />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">High Converting</h3>
-              <p className="text-gray-400">Proven templates that drive real results</p>
+              <FiCopy className="text-[#D4AF37] text-3xl mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Boost ROI Instantly</h3>
+              <p className="text-gray-400">See immediate improvements in your ad performance and conversion rates.</p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Ad Copy Generator Form */}
-      <section id="adCopyForm" className="py-20 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Generate Your Ad Copy
-              </h2>
-              <p className="text-gray-400">
-                Fill in the details below and let our AI create compelling ad copy for your business
-              </p>
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 bg-gray-900/50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black font-bold">1</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Fill Out Form</h3>
+              <p className="text-gray-400">Enter your product details and preferences</p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 p-8 rounded-xl border border-gray-800 shadow-xl">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <label htmlFor="product" className="block text-sm font-medium text-gray-300">
-                    Product or Service Name
-                  </label>
-                  <div className="group relative">
-                    <FiHelpCircle className="text-[#D4AF37] w-4 h-4 cursor-help" />
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                      {tooltips.product}
+            <div className="text-center">
+              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black font-bold">2</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">AI Writes Copy</h3>
+              <p className="text-gray-400">Our AI generates optimized ad copy</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-black font-bold">3</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Copy & Launch</h3>
+              <p className="text-gray-400">Use the generated copy in your ads</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Generator Form Section */}
+      <section id="generator-form" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-gray-900/50 p-8 rounded-xl border border-gray-800">
+            <h2 className="text-2xl font-bold mb-6">Generate Your Ad Copy</h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Product Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.productName}
+                      onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      required
+                    />
+                    <div className="absolute right-2 top-2">
+                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Enter your product or service name" />
                     </div>
                   </div>
                 </div>
-                <input
-                  type="text"
-                  id="product"
-                  value={formData.product}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
-                  placeholder="e.g., Social Media Management Tool"
-                  required
-                />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <label htmlFor="audience" className="block text-sm font-medium text-gray-300">
-                    Target Audience
-                  </label>
-                  <div className="group relative">
-                    <FiHelpCircle className="text-[#D4AF37] w-4 h-4 cursor-help" />
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                      {tooltips.audience}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Target Audience</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.targetAudience}
+                      onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      required
+                    />
+                    <div className="absolute right-2 top-2">
+                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Describe your ideal customer" />
                     </div>
                   </div>
                 </div>
-                <input
-                  type="text"
-                  id="audience"
-                  value={formData.audience}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
-                  placeholder="e.g., Small Business Owners"
-                  required
-                />
               </div>
+
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <label htmlFor="usp" className="block text-sm font-medium text-gray-300">
-                    Unique Selling Points
-                  </label>
-                  <div className="group relative">
-                    <FiHelpCircle className="text-[#D4AF37] w-4 h-4 cursor-help" />
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                      {tooltips.usp}
+                <label className="block text-sm font-medium mb-2">Product Description</label>
+                <div className="relative">
+                  <textarea
+                    value={formData.productDescription}
+                    onChange={(e) => setFormData({ ...formData, productDescription: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    required
+                  />
+                  <div className="absolute right-2 top-2">
+                    <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Describe your product's features and benefits" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Tone</label>
+                  <div className="relative">
+                    <select
+                      value={formData.tone}
+                      onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      required
+                    >
+                      <option value="">Select Tone</option>
+                      <option value="professional">Professional</option>
+                      <option value="casual">Casual</option>
+                      <option value="friendly">Friendly</option>
+                      <option value="authoritative">Authoritative</option>
+                    </select>
+                    <div className="absolute right-2 top-2">
+                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Choose the tone for your ad copy" />
                     </div>
                   </div>
                 </div>
-                <textarea
-                  id="usp"
-                  value={formData.usp}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
-                  placeholder="e.g., Save 10 hours per week, Automated posting, Analytics included"
-                  required
-                />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <label htmlFor="tone" className="block text-sm font-medium text-gray-300">
-                    Tone
-                  </label>
-                  <div className="group relative">
-                    <FiHelpCircle className="text-[#D4AF37] w-4 h-4 cursor-help" />
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                      {tooltips.tone}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Platform</label>
+                  <div className="relative">
+                    <select
+                      value={formData.platform}
+                      onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      required
+                    >
+                      <option value="">Select Platform</option>
+                      <option value="facebook">Facebook</option>
+                      <option value="google">Google</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="linkedin">LinkedIn</option>
+                    </select>
+                    <div className="absolute right-2 top-2">
+                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Select where your ad will appear" />
                     </div>
                   </div>
                 </div>
-                <select
-                  id="tone"
-                  value={formData.tone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
-                  required
-                >
-                  <option value="professional">Professional</option>
-                  <option value="friendly">Friendly</option>
-                  <option value="casual">Casual</option>
-                  <option value="persuasive">Persuasive</option>
-                  <option value="urgent">Urgent</option>
-                </select>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Max Length</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={formData.maxLength}
+                      onChange={(e) => setFormData({ ...formData, maxLength: parseInt(e.target.value) })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      min="50"
+                      max="500"
+                      required
+                    />
+                    <div className="absolute right-2 top-2">
+                      <FiHelpCircle className="text-gray-400 hover:text-white cursor-help" title="Set maximum character length for the ad copy" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <motion.button
+
+              <button
                 type="submit"
-                disabled={isGenerating}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
+                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                {isGenerating ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    Generate Ad Copy
-                    <FiArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </motion.button>
+                {isLoading ? 'Generating...' : 'Generate Ad Copy'}
+                {!isLoading && <FiChevronRight className="ml-2" />}
+              </button>
             </form>
+
+            {error && (
+              <div className="mt-6 p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
+                {error}
+              </div>
+            )}
+
+            {result && (
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-lg font-medium">Generated Ad Copy</h3>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(result)}
+                    className="text-[#D4AF37] hover:text-[#C19B2E] transition flex items-center"
+                  >
+                    <FiCopy className="mr-1" /> Copy
+                  </button>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                  <p className="whitespace-pre-wrap">{result}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
-
-      {/* Ad Output Section */}
-      {adOutput && (
-        <section className="py-20 bg-gray-900">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto">
-              <div className="bg-black p-8 rounded-xl border border-gray-800 shadow-xl">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2">Headline</h3>
-                    <p className="text-xl font-bold text-white">{adOutput.headline}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2">Ad Copy</h3>
-                    <p className="text-white">{adOutput.body}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2">Call to Action</h3>
-                    <p className="text-white">{adOutput.cta}</p>
-                  </div>
-                  <motion.button
-                    onClick={() => copyToClipboard(`${adOutput.headline}\n\n${adOutput.body}\n\n${adOutput.cta}`)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                  >
-                    {copied ? (
-                      <>
-                        <FiCheck className="w-4 h-4" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <FiCopy className="w-4 h-4" />
-                        Copy to Clipboard
-                      </>
-                    )}
-                  </motion.button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20 bg-black">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Choose the plan that's right for you
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
-            >
-              <h3 className="text-xl font-bold text-white mb-4">Starter</h3>
-              <div className="text-4xl font-bold text-white mb-4">$29<span className="text-lg text-gray-400">/month</span></div>
+      <section id="pricing" className="py-20 bg-gray-900/50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
+              <h3 className="text-2xl font-bold mb-4">Free Plan</h3>
+              <p className="text-4xl font-bold mb-6">$0<span className="text-lg text-gray-400">/month</span></p>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>50 ad generations</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> 5 ad copies per month
                 </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Basic templates</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
                 </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Email support</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Standard support
                 </li>
               </ul>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
+              <button
+                onClick={scrollToForm}
+                className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium hover:bg-gray-600 transition"
               >
                 Get Started
-              </motion.button>
-            </motion.div>
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border-2 border-[#D4AF37] relative"
-            >
-              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black text-sm font-bold px-4 py-1 rounded-tl-lg rounded-br-lg">
-                POPULAR
+              </button>
+            </div>
+            <div className="bg-gray-800/50 p-8 rounded-xl border-2 border-[#D4AF37] relative">
+              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black px-4 py-1 rounded-bl-lg rounded-tr-lg text-sm font-medium">
+                Most Popular
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">Professional</h3>
-              <div className="text-4xl font-bold text-white mb-4">$79<span className="text-lg text-gray-400">/month</span></div>
+              <h3 className="text-2xl font-bold mb-4">Pro Plan</h3>
+              <p className="text-4xl font-bold mb-6">$29<span className="text-lg text-gray-400">/month</span></p>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>200 ad generations</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
                 </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Advanced templates</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Advanced templates
                 </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Priority support</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
                 </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Team collaboration</span>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Custom tone training
                 </li>
               </ul>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
+              <button
+                onClick={scrollToForm}
+                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
               >
-                Get Started
-              </motion.button>
-            </motion.div>
-            <motion.div 
-              whileHover={{ y: -10 }}
-              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
-            >
-              <h3 className="text-xl font-bold text-white mb-4">Enterprise</h3>
-              <div className="text-4xl font-bold text-white mb-4">Custom</div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Unlimited generations</span>
-                </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Custom templates</span>
-                </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>Dedicated support</span>
-                </li>
-                <li className="flex items-center gap-2 text-gray-300">
-                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
-                  <span>API access</span>
-                </li>
-              </ul>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
-              >
-                Contact Sales
-              </motion.button>
-            </motion.div>
+                Start Free Trial
+              </button>
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Start Writing Better Ads Today</h2>
+          <p className="text-gray-400 mb-8">No credit card required. Cancel anytime.</p>
+          <button
+            onClick={scrollToForm}
+            className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition"
+          >
+            Generate Ad Copy Now
+          </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-black border-t border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center">
-            <div className="relative w-[300px] h-[120px] mb-8">
+      <footer className="py-8 border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-4 md:mb-0">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Ad Pro AI Logo"
-                fill
-                style={{ objectFit: 'contain' }}
-                priority
+                width={150}
+                height={42}
+                className="h-10 w-auto"
               />
             </div>
-            <p className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} Ad Pro AI. All rights reserved.
-            </p>
+            <div className="flex space-x-6">
+              <a href="#" className="text-gray-400 hover:text-white transition">Privacy Policy</a>
+              <a href="#" className="text-gray-400 hover:text-white transition">Terms of Service</a>
+              <a href="#" className="text-gray-400 hover:text-white transition">Contact</a>
+            </div>
           </div>
         </div>
       </footer>
