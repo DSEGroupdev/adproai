@@ -3,7 +3,7 @@
 // Force deployment - April 16, 2024 - v2
 import Head from 'next/head'
 import Image from 'next/image'
-import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight } from 'react-icons/fi'
+import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX } from 'react-icons/fi'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
@@ -20,6 +20,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState('')
   const [error, setError] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -42,15 +44,29 @@ export default function Home() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to generate ad copy')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to generate ad copy')
       }
 
       const data = await response.json()
-      setResult(data.result)
+      // Format the response for display
+      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`
+      setResult(formattedResult)
+      setShowModal(true)
     } catch (err) {
       setError(err.message)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(result)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
     }
   }
 
@@ -448,6 +464,69 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Result Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-2xl w-full relative"
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+            >
+              <FiX size={24} />
+            </button>
+            
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-bold">Generated Ad Copy</h3>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center space-x-2 bg-[#D4AF37]/10 text-[#D4AF37] px-4 py-2 rounded-lg hover:bg-[#D4AF37]/20 transition"
+                >
+                  {copied ? (
+                    <>
+                      <FiCheck className="text-green-500" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiCopy />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 space-y-4">
+                {result.split('\n\n').map((section, index) => (
+                  <div key={index} className="space-y-2">
+                    <h4 className="text-[#D4AF37] font-medium">
+                      {section.split(':')[0]}:
+                    </h4>
+                    <p className="text-gray-300">
+                      {section.split(':')[1].trim()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 } 
