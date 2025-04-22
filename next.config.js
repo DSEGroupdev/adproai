@@ -3,23 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
   },
-  // Ensure proper static site generation
-  output: 'export',
-  // Disable server features since we're doing static export
+  // Remove static export to let Vercel handle SSR
   distDir: '.next',
-  // Disable image optimization since we're doing static export
-  experimental: {
-    images: {
-      unoptimized: true,
-    },
-  },
+  trailingSlash: true,
+  // Add basePath for proper routing
+  basePath: '',
 }
 
 module.exports = nextConfig 
