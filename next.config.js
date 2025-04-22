@@ -5,11 +5,11 @@ const nextConfig = {
     unoptimized: true,
     domains: ['vercel.app'],
   },
-  // Remove static export to let Vercel handle SSR
+  // Configure for Vercel deployment
+  output: 'standalone',
   distDir: '.next',
   trailingSlash: true,
-  // Add basePath for proper routing
-  basePath: '',
+  // Remove basePath as it's not needed
   async rewrites() {
     return [
       {
