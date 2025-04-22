@@ -1,3 +1,9 @@
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 export default async function handler(req, res) {
   // Method validation
   if (req.method !== 'POST') {
@@ -6,116 +12,65 @@ export default async function handler(req, res) {
 
   try {
     // Input validation
-    const { productName, audience, usps, tone = 'Persuasive' } = req.body;
+    const { product, audience, usp, tone } = req.body;
 
-    if (!productName?.trim() || !audience?.trim() || !usps?.trim()) {
+    if (!product?.trim() || !audience?.trim() || !usp?.trim()) {
       return res.status(400).json({ 
         error: 'Missing required fields',
         details: {
-          productName: !productName?.trim() ? 'Product name is required' : null,
+          product: !product?.trim() ? 'Product is required' : null,
           audience: !audience?.trim() ? 'Target audience is required' : null,
-          usps: !usps?.trim() ? 'Unique selling points are required' : null
+          usp: !usp?.trim() ? 'Unique selling points are required' : null
         }
       });
     }
 
     // Input sanitization
     const sanitizedInputs = {
-      productName: productName.trim(),
+      product: product.trim(),
       audience: audience.trim(),
-      usps: usps.trim(),
+      usp: usp.trim(),
       tone: tone.trim()
     };
 
-    const prompt = `You are an elite performance marketer and ad copywriter.
-Your goal is to write a high-converting ad for:
-
-Product/Service: ${sanitizedInputs.productName}
+    const prompt = `Create a compelling ad copy for the following:
+Product/Service: ${sanitizedInputs.product}
 Target Audience: ${sanitizedInputs.audience}
-Unique Selling Points: ${sanitizedInputs.usps}
+Unique Selling Points: ${sanitizedInputs.usp}
 Tone: ${sanitizedInputs.tone}
 
-Structure the response like this:
+Please provide:
+1. A catchy headline (max 60 characters)
+2. Ad body copy (max 90 words)
+3. A strong call to action (max 30 characters)
 
-Headline:
-[Write a powerful 1-line headline that grabs attention]
+Format the response as a JSON object with "headline", "body", and "cta" fields.`;
 
-Ad Copy:
-[Write 2-3 persuasive sentences that highlight benefits]
-
-Call to Action:
-[Write a strong, motivating CTA encouraging them to take action]`;
-
-    // API call with timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
-      signal: controller.signal
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4-turbo-preview",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert copywriter specializing in creating high-converting ad copy. Your responses should be concise, compelling, and formatted as JSON."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" }
     });
 
-    clearTimeout(timeout);
-
-    if (!completion.ok) {
-      const errorData = await completion.json();
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
-    }
-
-    const result = await completion.json();
-    
-    if (!result.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from OpenAI API');
-    }
-
-    // Parse the structured response
-    const responseText = result.choices[0].message.content;
-    const sections = responseText.split('\n\n');
-    
-    const structuredResponse = {
-      headline: sections.find(s => s.startsWith('Headline:'))?.replace('Headline:', '').trim() || '',
-      adCopy: sections.find(s => s.startsWith('Ad Copy:'))?.replace('Ad Copy:', '').trim() || '',
-      callToAction: sections.find(s => s.startsWith('Call to Action:'))?.replace('Call to Action:', '').trim() || '',
-      raw: responseText
-    };
+    const response = JSON.parse(completion.choices[0].message.content);
 
     // Rate limiting - 5 requests per minute
     res.setHeader('X-RateLimit-Limit', '5');
     res.setHeader('X-RateLimit-Remaining', '4');
     res.setHeader('X-RateLimit-Reset', Math.floor(Date.now() / 1000) + 60);
 
-    return res.status(200).json({
-      success: true,
-      data: structuredResponse,
-      metadata: {
-        model: 'gpt-4',
-        timestamp: new Date().toISOString()
-      }
-    });
-
+    return res.status(200).json(response);
   } catch (error) {
-    console.error('API Error:', error);
-    
-    if (error.name === 'AbortError') {
-      return res.status(504).json({ 
-        error: 'Request timeout',
-        message: 'The request took too long to complete'
-      });
-    }
-
-    return res.status(500).json({ 
-      error: 'Internal server error',
-      message: error.message || 'An unexpected error occurred'
-    });
+    console.error('Error generating ad copy:', error);
+    res.status(500).json({ error: 'Error generating ad copy' });
   }
 } 

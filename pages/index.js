@@ -3,8 +3,9 @@
 // Force deployment - April 16, 2024 - v2
 import Head from 'next/head'
 import Image from 'next/image'
-import { FiZap, FiHelpCircle, FiCopy, FiCheck } from 'react-icons/fi'
+import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight } from 'react-icons/fi'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -64,6 +65,14 @@ export default function Home() {
     document.getElementById('adCopyForm')?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const scrollToPricing = () => {
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToFeatures = () => {
+    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className="bg-black min-h-screen">
       <Head>
@@ -77,14 +86,25 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="relative w-[224px] h-[96px]">
-              <Image
-                src="/logo.jpg"
-                alt="Ad Pro AI Logo"
+            <div className="relative w-[300px] h-[120px]">
+              <Image 
+                src="/logo.jpg" 
+                alt="Ad Pro AI Logo" 
                 fill
                 style={{ objectFit: 'contain' }}
                 priority
               />
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <button onClick={scrollToFeatures} className="text-gray-300 hover:text-[#D4AF37] transition-colors">
+                Features
+              </button>
+              <button onClick={scrollToPricing} className="text-gray-300 hover:text-[#D4AF37] transition-colors">
+                Pricing
+              </button>
+              <button onClick={scrollToForm} className="bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-2 px-6 rounded-lg transition-all duration-300">
+                Try it Free
+              </button>
             </div>
           </div>
         </div>
@@ -104,13 +124,15 @@ export default function Home() {
               Built for marketers, entrepreneurs, and agencies.<br />No writing skills needed.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <button 
+              <motion.button 
                 onClick={scrollToForm}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl w-full sm:w-auto flex items-center justify-center gap-2"
               >
                 Try it Free
                 <FiZap className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
             <div className="flex flex-wrap justify-center gap-8 text-gray-400 text-sm">
               <div className="flex items-center gap-2">
@@ -122,6 +144,52 @@ export default function Home() {
                 <span>Cancel anytime</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-black">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Powerful Features
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Everything you need to create high-converting ad copy
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            >
+              <div className="text-[#D4AF37] text-4xl mb-4">
+                <FiZap />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Lightning Fast</h3>
+              <p className="text-gray-400">Generate professional ad copy in seconds, not hours</p>
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            >
+              <div className="text-[#D4AF37] text-4xl mb-4">
+                <FiCopy />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Multiple Formats</h3>
+              <p className="text-gray-400">Create ads for any platform with optimized formats</p>
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            >
+              <div className="text-[#D4AF37] text-4xl mb-4">
+                <FiCheck />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">High Converting</h3>
+              <p className="text-gray-400">Proven templates that drive real results</p>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -138,7 +206,7 @@ export default function Home() {
                 Fill in the details below and let our AI create compelling ad copy for your business
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 bg-gray-900 p-8 rounded-xl border border-gray-800 shadow-xl">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="product" className="block text-sm font-medium text-gray-300">
@@ -156,7 +224,7 @@ export default function Home() {
                   id="product"
                   value={formData.product}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
                   placeholder="e.g., Social Media Management Tool"
                   required
                 />
@@ -178,7 +246,7 @@ export default function Home() {
                   id="audience"
                   value={formData.audience}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
                   placeholder="e.g., Small Business Owners"
                   required
                 />
@@ -200,7 +268,7 @@ export default function Home() {
                   value={formData.usp}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
                   placeholder="e.g., Save 10 hours per week, Automated posting, Analytics included"
                   required
                 />
@@ -221,7 +289,7 @@ export default function Home() {
                   id="tone"
                   value={formData.tone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-900 border border-gray-800 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent text-white"
                   required
                 >
                   <option value="professional">Professional</option>
@@ -231,14 +299,28 @@ export default function Home() {
                   <option value="urgent">Urgent</option>
                 </select>
               </div>
-              <button
+              <motion.button
                 type="submit"
                 disabled={isGenerating}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isGenerating ? 'Generating...' : 'Generate Ad Copy'}
-                <FiZap className="w-5 h-5" />
-              </button>
+                {isGenerating ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    Generate Ad Copy
+                    <FiArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </motion.button>
             </form>
           </div>
         </div>
@@ -249,7 +331,7 @@ export default function Home() {
         <section className="py-20 bg-gray-900">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto">
-              <div className="bg-black p-8 rounded-xl border border-gray-800">
+              <div className="bg-black p-8 rounded-xl border border-gray-800 shadow-xl">
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-sm font-medium text-gray-400 mb-2">Headline</h3>
@@ -263,8 +345,10 @@ export default function Home() {
                     <h3 className="text-sm font-medium text-gray-400 mb-2">Call to Action</h3>
                     <p className="text-white">{adOutput.cta}</p>
                   </div>
-                  <button
+                  <motion.button
                     onClick={() => copyToClipboard(`${adOutput.headline}\n\n${adOutput.body}\n\n${adOutput.cta}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
                   >
                     {copied ? (
@@ -278,7 +362,7 @@ export default function Home() {
                         Copy to Clipboard
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>
@@ -286,11 +370,122 @@ export default function Home() {
         </section>
       )}
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-black">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              Choose the plan that's right for you
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            >
+              <h3 className="text-xl font-bold text-white mb-4">Starter</h3>
+              <div className="text-4xl font-bold text-white mb-4">$29<span className="text-lg text-gray-400">/month</span></div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>50 ad generations</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Basic templates</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Email support</span>
+                </li>
+              </ul>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
+              >
+                Get Started
+              </motion.button>
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border-2 border-[#D4AF37] relative"
+            >
+              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black text-sm font-bold px-4 py-1 rounded-tl-lg rounded-br-lg">
+                POPULAR
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4">Professional</h3>
+              <div className="text-4xl font-bold text-white mb-4">$79<span className="text-lg text-gray-400">/month</span></div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>200 ad generations</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Advanced templates</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Priority support</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Team collaboration</span>
+                </li>
+              </ul>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
+              >
+                Get Started
+              </motion.button>
+            </motion.div>
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="bg-gray-900 p-8 rounded-xl border border-gray-800"
+            >
+              <h3 className="text-xl font-bold text-white mb-4">Enterprise</h3>
+              <div className="text-4xl font-bold text-white mb-4">Custom</div>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Unlimited generations</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Custom templates</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>Dedicated support</span>
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <FiCheck className="text-[#D4AF37] w-5 h-5" />
+                  <span>API access</span>
+                </li>
+              </ul>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-[#D4AF37] hover:bg-[#C19B2E] text-white font-bold py-3 px-6 rounded-lg transition-all duration-300"
+              >
+                Contact Sales
+              </motion.button>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 bg-black border-t border-gray-800">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center">
-            <div className="relative w-[224px] h-[96px] mb-8">
+            <div className="relative w-[300px] h-[120px] mb-8">
               <Image
                 src="/logo.jpg"
                 alt="Ad Pro AI Logo"
