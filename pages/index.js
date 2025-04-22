@@ -33,7 +33,12 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          product: formData.productName,
+          audience: formData.targetAudience,
+          usp: formData.productDescription,
+          tone: formData.tone
+        }),
       })
 
       if (!response.ok) {
