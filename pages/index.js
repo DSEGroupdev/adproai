@@ -3,7 +3,7 @@
 // Force deployment - April 16, 2024 - v2
 import Head from 'next/head'
 import Image from 'next/image'
-import { FiZap, FiTarget, FiLayers, FiTrendingUp, FiBrain, FiCpu } from 'react-icons/fi'
+import { FiZap, FiCode, FiServer, FiTarget, FiCpu, FiBox } from 'react-icons/fi'
 import { useState } from 'react'
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   const scrollToForm = () => {
-    document.getElementById('adCopyForm').scrollIntoView({ behavior: 'smooth' })
+    document.getElementById('adCopyForm')?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
@@ -80,11 +80,11 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap justify-center gap-8 text-gray-400">
               <div className="flex items-center gap-2">
-                <FiBrain className="text-[#D4AF37] w-5 h-5" />
+                <FiCpu className="text-[#D4AF37] w-5 h-5" />
                 <span>AI-Powered Copy Generation</span>
               </div>
               <div className="flex items-center gap-2">
-                <FiCpu className="text-[#D4AF37] w-5 h-5" />
+                <FiServer className="text-[#D4AF37] w-5 h-5" />
                 <span>Multiple Ad Formats</span>
               </div>
               <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
             <div className="bg-black/50 p-8 rounded-xl border border-gray-800 hover:border-[#D4AF37] transition-colors">
               <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-lg flex items-center justify-center mb-6">
-                <FiBrain className="text-[#D4AF37] w-6 h-6" />
+                <FiCpu className="text-[#D4AF37] w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-white mb-4">AI-Powered Copy</h3>
               <p className="text-gray-400">Generate compelling ad copy using advanced AI technology trained on high-performing ads.</p>
