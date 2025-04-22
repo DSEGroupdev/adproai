@@ -2,11 +2,10 @@
 // Force redeploy with styles - April 16, 2024
 import Head from 'next/head'
 import Image from 'next/image'
-import '../styles/globals.css'
 
 export default function Home() {
   return (
-    <>
+    <div style={{ backgroundColor: '#000000', minHeight: '100vh' }}>
       <Head>
         <title>Ad Pro AI - Coming Soon</title>
         <meta name="description" content="Ad Pro AI - Coming Soon" />
@@ -14,8 +13,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.png" />
       </Head>
 
-      <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-black">
-        <div className="relative w-[900px] h-[900px] mb-12">
+      <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+        <div style={{ position: 'relative', width: '900px', height: '900px', marginBottom: '3rem' }}>
           <Image
             src="/logo.jpg"
             alt="Ad Pro AI Logo"
@@ -26,15 +25,27 @@ export default function Home() {
           />
         </div>
         
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-[#D4AF37] mb-6 tracking-wide">
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ 
+            fontSize: '3rem', 
+            fontWeight: 'bold', 
+            color: '#D4AF37', 
+            marginBottom: '1.5rem',
+            letterSpacing: '0.05em'
+          }}>
             COMING SOON
           </h1>
-          <p className="text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p style={{ 
+            fontSize: '1.5rem', 
+            color: '#D1D5DB',
+            maxWidth: '42rem',
+            margin: '0 auto',
+            lineHeight: '1.75'
+          }}>
             We're crafting something extraordinary for marketers and entrepreneurs
           </p>
         </div>
       </main>
-    </>
+    </div>
   );
 } 
