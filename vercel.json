@@ -1,15 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
   "routes": [
     {
       "src": "/api/generate",
-      "methods": ["POST"],
+      "methods": ["POST", "OPTIONS"],
       "dest": "/api/generate"
     }
   ]
