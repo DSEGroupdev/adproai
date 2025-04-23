@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Create ad copy with a headline, body, and call to action. Return the response as a JSON object with fields 'headline', 'body', and 'cta'."
+          content: "You are an expert copywriter. Generate ad copy and format the response as a JSON object with the following structure: { 'headline': 'your headline here', 'body': 'your body copy here', 'cta': 'your call to action here' }"
         },
         {
           role: "user",
@@ -32,8 +32,12 @@ export default async function handler(req, res) {
     });
 
     const adCopy = JSON.parse(completion.choices[0].message.content);
-    const result = `Headline: ${adCopy.headline}\n\nBody: ${adCopy.body}\n\nCall to Action: ${adCopy.cta}`;
+    
+    if (!adCopy.headline || !adCopy.body || !adCopy.cta) {
+      throw new Error('Invalid response format from OpenAI');
+    }
 
+    const result = `Headline: ${adCopy.headline}\n\nBody: ${adCopy.body}\n\nCall to Action: ${adCopy.cta}`;
     return res.status(200).json({ result });
   } catch (error) {
     console.error('API Error:', error);
