@@ -29,6 +29,9 @@ export default function Home() {
     setError(null);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -40,20 +43,45 @@ export default function Home() {
           usp: formData.productDescription,
           tone: formData.tone,
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate ad copy');
+        let errorMessage;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || 'Failed to generate ad copy';
+        } catch (e) {
+          // If response is not JSON, try to get text
+          const textError = await response.text();
+          errorMessage = textError || `HTTP error! status: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('Invalid JSON response from server');
+      }
+
+      if (!data.headline || !data.body || !data.cta) {
+        throw new Error('Invalid response format: missing required fields');
+      }
+
       const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
       setResult(formattedResult);
       setShowModal(true);
     } catch (err) {
-      console.error('Error:', err);
-      setError(err.message);
+      console.error('Form submission error:', err);
+      if (err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError(err.message || 'Failed to generate ad copy. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

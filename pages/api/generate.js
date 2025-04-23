@@ -33,11 +33,11 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Return your response as a JSON object with these exact fields: 'headline', 'body', and 'cta'. The response must be a valid JSON object containing these three fields."
+          content: "You are an expert copywriter. Generate JSON formatted ad copy. Include a compelling headline, persuasive body text, and a strong call to action. Return ONLY valid JSON with these exact fields: 'headline', 'body', and 'cta'."
         },
         {
           role: "user",
-          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}`
+          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}. Remember to return only valid JSON with headline, body, and cta fields.`
         }
       ],
       response_format: { type: "json_object" }
@@ -52,6 +52,19 @@ export default async function handler(req, res) {
     return res.status(200).json(adCopy);
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Failed to generate ad copy', details: error.message });
+    
+    // Handle different types of errors
+    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+      return res.status(504).json({ error: 'Request timed out' });
+    }
+    
+    if (error.response?.status === 429) {
+      return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
+    }
+    
+    return res.status(error.status || 500).json({ 
+      error: 'Failed to generate ad copy',
+      details: error.message
+    });
   }
 } 
