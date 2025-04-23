@@ -8,7 +8,7 @@ const nextConfig = {
   // Configure for Vercel deployment
   output: 'standalone',
   distDir: '.next',
-  trailingSlash: true
+  trailingSlash: false
 }
 
 module.exports = nextConfig 

@@ -33,7 +33,7 @@ export default function Home() {
     console.log('Submitting to:', apiUrl)
 
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
