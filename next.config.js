@@ -9,12 +9,18 @@ const nextConfig = {
   output: 'standalone',
   distDir: '.next',
   trailingSlash: true,
-  // Remove basePath as it's not needed
+  // Update rewrites to exclude API routes
   async rewrites() {
     return [
       {
         source: '/:path*',
         destination: '/',
+        has: [
+          {
+            type: 'prefix',
+            value: '(?!/api)',
+          },
+        ],
       },
     ]
   },
