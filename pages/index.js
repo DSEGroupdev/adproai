@@ -24,13 +24,10 @@ export default function Home() {
   const [copied, setCopied] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
-    setResult('')
-
-    const apiUrl = '/api/generate'
-    console.log('Submitting to:', apiUrl)
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setResult('');
 
     try {
       const response = await fetch('/api/generate', {
@@ -46,31 +43,21 @@ export default function Home() {
         })
       });
 
-      console.log('Response status:', response.status);
-      
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        let errorMessage;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.error;
-        } catch {
-          errorMessage = `HTTP error! status: ${response.status}`;
-        }
-        throw new Error(errorMessage);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
       setResult(data.result);
       setShowModal(true);
     } catch (err) {
-      console.error('Fetch error:', err);
-      setError(err.message);
+      console.error('Form submission error:', err);
+      setError(err.message || 'Failed to generate ad copy');
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const handleCopy = async () => {
     try {
