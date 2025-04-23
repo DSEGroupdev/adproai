@@ -30,6 +30,13 @@ export default function Home() {
     setResult('')
 
     try {
+      console.log('Submitting form with data:', {
+        product: formData.productName,
+        audience: formData.targetAudience,
+        usp: formData.productDescription,
+        tone: formData.tone
+      });
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -41,27 +48,40 @@ export default function Home() {
           usp: formData.productDescription,
           tone: formData.tone
         }),
-      })
+      });
 
-      const data = await response.json()
+      console.log('Response status:', response.status);
+      
+      let data;
+      try {
+        const text = await response.text();
+        console.log('Raw response text:', text);
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw new Error('Failed to parse server response');
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate ad copy')
+        console.error('Server error:', data);
+        throw new Error(data.error || 'Failed to generate ad copy');
       }
 
       if (!data || !data.headline || !data.body || !data.cta) {
-        throw new Error('Invalid response format from server')
+        console.error('Invalid response format:', data);
+        throw new Error('Invalid response format from server');
       }
 
       // Format the response for display
-      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`
-      setResult(formattedResult)
-      setShowModal(true)
+      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
+      console.log('Setting formatted result:', formattedResult);
+      setResult(formattedResult);
+      setShowModal(true);
     } catch (err) {
-      console.error('Error:', err)
-      setError(err.message || 'An error occurred while generating ad copy')
+      console.error('Error in form submission:', err);
+      setError(err.message || 'An error occurred while generating ad copy');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
