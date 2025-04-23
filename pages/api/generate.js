@@ -1,4 +1,8 @@
-import { openai } from './config';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -14,48 +18,30 @@ export default async function handler(req, res) {
 
   const { product, audience, usp, tone } = req.body;
 
-  if (!product || !audience || !usp) {
+  if (!product || !audience || !usp || !tone) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    const prompt = `Create a compelling ad copy for the following:
-Product/Service: ${product}
-Target Audience: ${audience}
-Unique Selling Points: ${usp}
-Tone: ${tone || 'professional'}
-
-Please provide:
-1. A catchy headline (max 60 characters)
-2. Ad body copy (max 90 words)
-3. A strong call to action (max 30 characters)
-
-Format the response as a JSON object with "headline", "body", and "cta" fields.`;
-
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview",
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter specializing in creating high-converting ad copy. Your responses should be concise, compelling, and formatted as JSON."
+          content: "You are an expert copywriter. Create ad copy with a headline, body, and call to action."
         },
         {
           role: "user",
-          content: prompt
+          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}`
         }
       ],
       response_format: { type: "json_object" }
     });
 
-    const response = JSON.parse(completion.choices[0].message.content);
-    
-    if (!response.headline || !response.body || !response.cta) {
-      throw new Error('Invalid response format from OpenAI');
-    }
+    const adCopy = JSON.parse(completion.choices[0].message.content);
+    const result = `Headline: ${adCopy.headline}\n\nBody: ${adCopy.body}\n\nCall to Action: ${adCopy.cta}`;
 
-    return res.status(200).json({ 
-      result: `Headline: ${response.headline}\n\nBody: ${response.body}\n\nCall to Action: ${response.cta}` 
-    });
+    return res.status(200).json({ result });
   } catch (error) {
     console.error('Error generating ad copy:', error);
     return res.status(500).json({ error: 'Failed to generate ad copy' });
