@@ -1,24 +1,28 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { openai, sendResponse, handleError } from './config';
 
 export default async function handler(req, res) {
-  // Method validation
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // Validate request method
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return sendResponse(res, 405, { error: 'Method not allowed' });
   }
 
   try {
-    // Input validation
     const { product, audience, usp, tone } = req.body;
-    
-    console.log('Received request with:', { product, audience, usp, tone });
 
+    // Validate required fields
     if (!product?.trim() || !audience?.trim() || !usp?.trim()) {
-      console.log('Missing required fields');
-      return res.status(400).json({ 
+      return sendResponse(res, 400, {
         error: 'Missing required fields',
         details: {
           product: !product?.trim() ? 'Product is required' : null,
@@ -28,15 +32,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // Input sanitization
+    // Prepare sanitized inputs
     const sanitizedInputs = {
       product: product.trim(),
       audience: audience.trim(),
       usp: usp.trim(),
-      tone: tone?.trim() || ''
+      tone: tone?.trim() || 'professional'
     };
-
-    console.log('Sanitized inputs:', sanitizedInputs);
 
     const prompt = `Create a compelling ad copy for the following:
 Product/Service: ${sanitizedInputs.product}
@@ -50,8 +52,6 @@ Please provide:
 3. A strong call to action (max 30 characters)
 
 Format the response as a JSON object with "headline", "body", and "cta" fields.`;
-
-    console.log('Sending prompt to OpenAI:', prompt);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview",
@@ -68,40 +68,27 @@ Format the response as a JSON object with "headline", "body", and "cta" fields.`
       response_format: { type: "json_object" }
     });
 
-    console.log('Raw OpenAI Response:', completion);
-    console.log('OpenAI Response Content:', completion.choices[0].message.content);
-
     let response;
     try {
       response = JSON.parse(completion.choices[0].message.content);
-      console.log('Parsed response:', response);
-
+      
       if (!response.headline || !response.body || !response.cta) {
-        console.log('Invalid response format - missing required fields');
         throw new Error('Invalid response format from OpenAI - missing required fields');
       }
     } catch (error) {
-      console.error('Error parsing OpenAI response:', error);
-      return res.status(500).json({ 
+      return sendResponse(res, 500, {
         error: 'Error processing AI response',
-        details: error.message,
-        raw_response: completion.choices[0].message.content
+        details: error.message
       });
     }
 
-    // Rate limiting - 5 requests per minute
+    // Set rate limiting headers
     res.setHeader('X-RateLimit-Limit', '5');
     res.setHeader('X-RateLimit-Remaining', '4');
     res.setHeader('X-RateLimit-Reset', Math.floor(Date.now() / 1000) + 60);
 
-    console.log('Sending successful response:', response);
-    return res.status(200).json(response);
+    return sendResponse(res, 200, response);
   } catch (error) {
-    console.error('Error generating ad copy:', error);
-    return res.status(500).json({ 
-      error: 'Error generating ad copy',
-      details: error.message,
-      stack: error.stack
-    });
+    return handleError(res, error);
   }
 } 
