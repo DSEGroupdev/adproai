@@ -1,50 +1,29 @@
-import { openai, sendResponse, handleError } from './config';
+import { openai } from './config';
 
 export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Handle OPTIONS request
   if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
   }
 
-  // Validate request method
   if (req.method !== 'POST') {
-    return sendResponse(res, 405, { error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const { product, audience, usp, tone } = req.body;
+
+  if (!product || !audience || !usp) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    const { product, audience, usp, tone } = req.body;
-
-    // Validate required fields
-    if (!product?.trim() || !audience?.trim() || !usp?.trim()) {
-      return sendResponse(res, 400, {
-        error: 'Missing required fields',
-        details: {
-          product: !product?.trim() ? 'Product is required' : null,
-          audience: !audience?.trim() ? 'Target audience is required' : null,
-          usp: !usp?.trim() ? 'Unique selling points are required' : null
-        }
-      });
-    }
-
-    // Prepare sanitized inputs
-    const sanitizedInputs = {
-      product: product.trim(),
-      audience: audience.trim(),
-      usp: usp.trim(),
-      tone: tone?.trim() || 'professional'
-    };
-
     const prompt = `Create a compelling ad copy for the following:
-Product/Service: ${sanitizedInputs.product}
-Target Audience: ${sanitizedInputs.audience}
-Unique Selling Points: ${sanitizedInputs.usp}
-Tone: ${sanitizedInputs.tone}
+Product/Service: ${product}
+Target Audience: ${audience}
+Unique Selling Points: ${usp}
+Tone: ${tone || 'professional'}
 
 Please provide:
 1. A catchy headline (max 60 characters)
@@ -58,7 +37,7 @@ Format the response as a JSON object with "headline", "body", and "cta" fields.`
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter specializing in creating high-converting ad copy. Your responses should be concise, compelling, and formatted as JSON with exactly these fields: headline, body, and cta."
+          content: "You are an expert copywriter specializing in creating high-converting ad copy. Your responses should be concise, compelling, and formatted as JSON."
         },
         {
           role: "user",
@@ -68,27 +47,17 @@ Format the response as a JSON object with "headline", "body", and "cta" fields.`
       response_format: { type: "json_object" }
     });
 
-    let response;
-    try {
-      response = JSON.parse(completion.choices[0].message.content);
-      
-      if (!response.headline || !response.body || !response.cta) {
-        throw new Error('Invalid response format from OpenAI - missing required fields');
-      }
-    } catch (error) {
-      return sendResponse(res, 500, {
-        error: 'Error processing AI response',
-        details: error.message
-      });
+    const response = JSON.parse(completion.choices[0].message.content);
+    
+    if (!response.headline || !response.body || !response.cta) {
+      throw new Error('Invalid response format from OpenAI');
     }
 
-    // Set rate limiting headers
-    res.setHeader('X-RateLimit-Limit', '5');
-    res.setHeader('X-RateLimit-Remaining', '4');
-    res.setHeader('X-RateLimit-Reset', Math.floor(Date.now() / 1000) + 60);
-
-    return sendResponse(res, 200, response);
+    return res.status(200).json({ 
+      result: `Headline: ${response.headline}\n\nBody: ${response.body}\n\nCall to Action: ${response.cta}` 
+    });
   } catch (error) {
-    return handleError(res, error);
+    console.error('Error generating ad copy:', error);
+    return res.status(500).json({ error: 'Failed to generate ad copy' });
   }
 } 
