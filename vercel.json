@@ -1,13 +1,8 @@
 {
-  "version": 2,
-  "framework": "nextjs",
-  "buildCommand": "next build",
-  "outputDirectory": ".next",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/generate",
-      "methods": ["POST", "OPTIONS"],
-      "dest": "/api/generate"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 } 
