@@ -49,12 +49,18 @@ export default function Home() {
       }
 
       const data = await response.json()
+      
+      if (!data || !data.headline || !data.body || !data.cta) {
+        throw new Error('Invalid response format from server')
+      }
+
       // Format the response for display
       const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`
       setResult(formattedResult)
       setShowModal(true)
     } catch (err) {
-      setError(err.message)
+      console.error('Error:', err)
+      setError(err.message || 'An error occurred while generating ad copy')
     } finally {
       setIsLoading(false)
     }
