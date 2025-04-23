@@ -29,8 +29,11 @@ export default function Home() {
     setError('')
     setResult('')
 
+    const apiUrl = '/api/generate'
+    console.log('Submitting to:', apiUrl)
+
     try {
-      const response = await fetch('/api/generate', {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,20 +43,29 @@ export default function Home() {
           audience: formData.targetAudience,
           usp: formData.productDescription,
           tone: formData.tone
-        }),
-        redirect: 'follow',
-        credentials: 'same-origin'
+        })
       });
 
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        let errorMessage;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error;
+        } catch {
+          errorMessage = `HTTP error! status: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       setResult(data.result);
       setShowModal(true);
     } catch (err) {
+      console.error('Fetch error:', err);
       setError(err.message);
     } finally {
       setIsLoading(false);
