@@ -30,13 +30,6 @@ export default function Home() {
     setResult('')
 
     try {
-      console.log('Submitting form with data:', {
-        product: formData.productName,
-        audience: formData.targetAudience,
-        usp: formData.productDescription,
-        tone: formData.tone
-      });
-
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -48,38 +41,20 @@ export default function Home() {
           usp: formData.productDescription,
           tone: formData.tone
         }),
+        redirect: 'follow',
+        credentials: 'same-origin'
       });
 
-      console.log('Response status:', response.status);
-      
-      let data;
-      try {
-        const text = await response.text();
-        console.log('Raw response text:', text);
-        data = JSON.parse(text);
-      } catch (parseError) {
-        console.error('Error parsing response:', parseError);
-        throw new Error('Failed to parse server response');
-      }
-
       if (!response.ok) {
-        console.error('Server error:', data);
-        throw new Error(data.error || 'Failed to generate ad copy');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
-      if (!data || !data.headline || !data.body || !data.cta) {
-        console.error('Invalid response format:', data);
-        throw new Error('Invalid response format from server');
-      }
-
-      // Format the response for display
-      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
-      console.log('Setting formatted result:', formattedResult);
-      setResult(formattedResult);
+      const data = await response.json();
+      setResult(data.result);
       setShowModal(true);
     } catch (err) {
-      console.error('Error in form submission:', err);
-      setError(err.message || 'An error occurred while generating ad copy');
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -102,9 +77,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Head>
-        <title>Ad Pro AI - AI-Powered Ad Copy Generation</title>
-        <meta name="description" content="Generate high-converting ad copy in seconds with AI" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
+        <meta name="description" content="Generate high-converting ad copy instantly with AI" />
       </Head>
 
       {/* Navigation */}

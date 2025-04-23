@@ -1,5 +1,15 @@
 {
   "version": 2,
   "trailingSlash": false,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/generate",
+      "destination": "/api/generate"
+    },
+    {
+      "source": "/api/generate/",
+      "destination": "/api/generate"
+    }
+  ]
 } 
