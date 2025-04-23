@@ -61,7 +61,21 @@ Format the response as a JSON object with "headline", "body", and "cta" fields.`
       response_format: { type: "json_object" }
     });
 
-    const response = JSON.parse(completion.choices[0].message.content);
+    console.log('OpenAI Response:', completion.choices[0].message.content);
+
+    let response;
+    try {
+      response = JSON.parse(completion.choices[0].message.content);
+      if (!response.headline || !response.body || !response.cta) {
+        throw new Error('Invalid response format from OpenAI');
+      }
+    } catch (error) {
+      console.error('Error parsing OpenAI response:', error);
+      return res.status(500).json({ 
+        error: 'Error processing AI response',
+        details: error.message
+      });
+    }
 
     // Rate limiting - 5 requests per minute
     res.setHeader('X-RateLimit-Limit', '5');
@@ -71,6 +85,9 @@ Format the response as a JSON object with "headline", "body", and "cta" fields.`
     return res.status(200).json(response);
   } catch (error) {
     console.error('Error generating ad copy:', error);
-    res.status(500).json({ error: 'Error generating ad copy' });
+    return res.status(500).json({ 
+      error: 'Error generating ad copy',
+      details: error.message
+    });
   }
 } 

@@ -43,13 +43,12 @@ export default function Home() {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to generate ad copy')
+        throw new Error(data.error || 'Failed to generate ad copy')
       }
 
-      const data = await response.json()
-      
       if (!data || !data.headline || !data.body || !data.cta) {
         throw new Error('Invalid response format from server')
       }
