@@ -5,7 +5,18 @@ const openai = new OpenAI({
 });
 
 export default async function handler(req, res) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // Only allow POST
   if (req.method !== 'POST') {
+    console.error(`Method ${req.method} Not Allowed`);
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
@@ -21,7 +32,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Generate ad copy and format the response as a JSON object with the following structure: { 'headline': 'your headline here', 'body': 'your body copy here', 'cta': 'your call to action here' }"
+          content: "You are an expert copywriter. Generate ad copy and format your response as a JSON object with these exact fields: 'headline', 'body', and 'cta'. The response MUST be valid JSON."
         },
         {
           role: "user",
@@ -41,6 +52,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ result });
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Failed to generate ad copy' });
+    return res.status(500).json({ error: 'Failed to generate ad copy', details: error.message });
   }
 } 

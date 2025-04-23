@@ -1,3 +1,16 @@
 {
-  "version": 2
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/generate",
+      "methods": ["POST"],
+      "dest": "/api/generate"
+    }
+  ]
 } 
