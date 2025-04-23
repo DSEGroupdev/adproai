@@ -26,8 +26,7 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
-    setResult('');
+    setError(null);
 
     try {
       const response = await fetch('/api/generate', {
@@ -39,21 +38,22 @@ export default function Home() {
           product: formData.productName,
           audience: formData.targetAudience,
           usp: formData.productDescription,
-          tone: formData.tone
-        })
+          tone: formData.tone,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        throw new Error(errorData.error || 'Failed to generate ad copy');
       }
 
       const data = await response.json();
-      setResult(data.result);
+      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
+      setResult(formattedResult);
       setShowModal(true);
     } catch (err) {
-      console.error('Form submission error:', err);
-      setError(err.message || 'Failed to generate ad copy');
+      console.error('Error:', err);
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }

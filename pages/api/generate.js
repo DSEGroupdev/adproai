@@ -6,6 +6,7 @@ const openai = new OpenAI({
 
 export default async function handler(req, res) {
   // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -32,7 +33,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Generate ad copy and format your response as a JSON object with these exact fields: 'headline', 'body', and 'cta'. The response MUST be valid JSON."
+          content: "You are an expert copywriter. Return your response as a JSON object with these exact fields: 'headline', 'body', and 'cta'. The response must be a valid JSON object containing these three fields."
         },
         {
           role: "user",
@@ -48,8 +49,7 @@ export default async function handler(req, res) {
       throw new Error('Invalid response format from OpenAI');
     }
 
-    const result = `Headline: ${adCopy.headline}\n\nBody: ${adCopy.body}\n\nCall to Action: ${adCopy.cta}`;
-    return res.status(200).json({ result });
+    return res.status(200).json(adCopy);
   } catch (error) {
     console.error('API Error:', error);
     return res.status(500).json({ error: 'Failed to generate ad copy', details: error.message });
