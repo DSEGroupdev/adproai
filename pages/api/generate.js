@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Create ad copy with a headline, body, and call to action."
+          content: "You are an expert copywriter. Create ad copy with a headline, body, and call to action. Return the response as a JSON object with fields 'headline', 'body', and 'cta'."
         },
         {
           role: "user",
