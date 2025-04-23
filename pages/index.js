@@ -77,7 +77,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       <Head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" type="image/png" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
         <meta name="description" content="Generate high-converting ad copy instantly with AI" />
       </Head>

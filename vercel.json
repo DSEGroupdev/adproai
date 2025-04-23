@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "trailingSlash": false,
-  "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/generate",
-      "destination": "/api/generate"
-    },
-    {
-      "source": "/api/generate/",
-      "destination": "/api/generate"
+      "src": "/api/generate",
+      "dest": "/api/generate"
     }
   ]
 } 

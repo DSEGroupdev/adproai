@@ -5,7 +5,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/logo.png" type="image/png" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
         <meta name="description" content="Generate high-converting ad copy in seconds using AI. Built for marketers, entrepreneurs, and agencies." />
         
