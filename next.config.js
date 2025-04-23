@@ -8,22 +8,7 @@ const nextConfig = {
   // Configure for Vercel deployment
   output: 'standalone',
   distDir: '.next',
-  trailingSlash: true,
-  // Update rewrites to exclude API routes
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/',
-        has: [
-          {
-            type: 'prefix',
-            value: '(?!/api)',
-          },
-        ],
-      },
-    ]
-  },
+  trailingSlash: true
 }
 
 module.exports = nextConfig 
