@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX } from 'react-icons/fi'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -126,12 +127,21 @@ export default function Home() {
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
               <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
-              <button
-                onClick={scrollToForm}
-                className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
-              >
-                Try it Free
-              </button>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition">
+                    Sign In
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <button
+                  onClick={scrollToForm}
+                  className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                >
+                  Try it Free
+                </button>
+              </SignedIn>
             </div>
           </div>
         </div>

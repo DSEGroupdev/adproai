@@ -1,9 +1,10 @@
 import '../styles/globals.css'
 import Head from 'next/head'
+import { ClerkProvider } from '@clerk/nextjs'
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <Head>
         <link rel="icon" href="/logo.png" type="image/png" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
@@ -24,6 +25,6 @@ export default function App({ Component, pageProps }) {
         <meta name="twitter:image" content="/logo.png" />
       </Head>
       <Component {...pageProps} />
-    </>
+    </ClerkProvider>
   )
 } 

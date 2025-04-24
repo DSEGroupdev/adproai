@@ -33,11 +33,11 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "You are an expert copywriter. Generate JSON formatted ad copy. Include a compelling headline, persuasive body text, and a strong call to action. Return ONLY valid JSON with these exact fields: 'headline', 'body', and 'cta'."
+          content: "You are an expert copywriter. Return a JSON response with these exact fields: 'headline', 'body', and 'cta'. The response must be a valid JSON object containing these three fields."
         },
         {
           role: "user",
-          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}. Remember to return only valid JSON with headline, body, and cta fields.`
+          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}. Return the response as a JSON object with headline, body, and cta fields.`
         }
       ],
       response_format: { type: "json_object" }
