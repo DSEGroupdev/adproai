@@ -17,6 +17,10 @@ export default function SignUpPage() {
             footerActionLink: 'text-[#D4AF37] hover:text-[#C19B2E]'
           }
         }}
+        routing="path"
+        path="/sign-up"
+        signInUrl="/sign-in"
+        afterSignUpUrl="/"
       />
     </div>
   );
