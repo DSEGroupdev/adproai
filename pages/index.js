@@ -6,9 +6,10 @@ import Image from 'next/image'
 import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX } from 'react-icons/fi'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { useUser } from '@clerk/nextjs'
 
 export default function Home() {
+  const { user, isSignedIn } = useUser();
   const [formData, setFormData] = useState({
     productName: '',
     productDescription: '',
@@ -26,13 +27,14 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isSignedIn) {
+      setError('Please sign in to generate ad copy');
+      return;
+    }
     setIsLoading(true);
     setError(null);
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
@@ -44,45 +46,20 @@ export default function Home() {
           usp: formData.productDescription,
           tone: formData.tone,
         }),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
       if (!response.ok) {
-        let errorMessage;
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || 'Failed to generate ad copy';
-        } catch (e) {
-          // If response is not JSON, try to get text
-          const textError = await response.text();
-          errorMessage = textError || `HTTP error! status: ${response.status}`;
-        }
-        throw new Error(errorMessage);
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate ad copy');
       }
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        throw new Error('Invalid JSON response from server');
-      }
-
-      if (!data.headline || !data.body || !data.cta) {
-        throw new Error('Invalid response format: missing required fields');
-      }
-
+      const data = await response.json();
       const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
       setResult(formattedResult);
       setShowModal(true);
     } catch (err) {
       console.error('Form submission error:', err);
-      if (err.name === 'AbortError') {
-        setError('Request timed out. Please try again.');
-      } else {
-        setError(err.message || 'Failed to generate ad copy. Please try again.');
-      }
+      setError(err.message || 'Failed to generate ad copy. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -127,21 +104,24 @@ export default function Home() {
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white transition">How It Works</a>
               <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition">
-                    Sign In
+              {isSignedIn ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-300">Welcome, {user.firstName || user.emailAddresses[0].emailAddress}</span>
+                  <button
+                    onClick={scrollToForm}
+                    className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                  >
+                    Generate Ad Copy
                   </button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <button
-                  onClick={scrollToForm}
+                </div>
+              ) : (
+                <a
+                  href="/sign-in"
                   className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
                 >
-                  Try it Free
-                </button>
-              </SignedIn>
+                  Sign In
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -156,12 +136,25 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="space-y-8"
           >
-            <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
-              Join 100+ marketers using Ad Pro AI
-            </p>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
-              Generate <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
-            </h1>
+            {isSignedIn ? (
+              <>
+                <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
+                  Welcome back, {user.firstName || user.emailAddresses[0].emailAddress}!
+                </p>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
+                  Ready to Create Your Next <span className="text-[#D4AF37]">High-Converting</span> Ad?
+                </h1>
+              </>
+            ) : (
+              <>
+                <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
+                  Join 100+ marketers using Ad Pro AI
+                </p>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
+                  Generate <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
+                </h1>
+              </>
+            )}
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Built for marketers, entrepreneurs, and agencies.<br />No writing skills needed.
             </p>
@@ -170,7 +163,7 @@ export default function Home() {
                 onClick={scrollToForm}
                 className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition transform hover:-translate-y-1 hover:shadow-xl"
               >
-                Try it Free <FiArrowRight className="inline-block ml-2" />
+                {isSignedIn ? 'Generate Ad Copy Now' : 'Try it Free'} <FiArrowRight className="inline-block ml-2" />
               </button>
             </div>
           </motion.div>
