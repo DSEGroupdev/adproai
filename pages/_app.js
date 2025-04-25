@@ -2,11 +2,11 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import { ClerkProvider } from '@clerk/nextjs'
 
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider {...pageProps}>
       <Head>
-        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
         <meta name="description" content="Generate high-converting ad copy in seconds using AI. Built for marketers, entrepreneurs, and agencies." />
         
@@ -27,4 +27,6 @@ export default function App({ Component, pageProps }) {
       <Component {...pageProps} />
     </ClerkProvider>
   )
-} 
+}
+
+export default MyApp 
