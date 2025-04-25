@@ -2,9 +2,16 @@ import '../styles/globals.css'
 import Head from 'next/head'
 import { ClerkProvider } from '@clerk/nextjs'
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { ...pageProps } }) {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    return <div>Missing Clerk Publishable Key</div>
+  }
+
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      {...pageProps}
+    >
       <Head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
