@@ -17,7 +17,8 @@ export default function Impressum() {
         </p>
         <p className="mb-4">
           Managing Director: Daniel Sedlak<br />
-          Company License No: [Insert IFZA License # if you want]
+          Company License No: Available upon request<br />
+          VAT Registration No: N/A (currently not VAT registered)
         </p>
         <p className="text-sm text-gray-600 mt-6">
           Last updated: April 25, 2025
