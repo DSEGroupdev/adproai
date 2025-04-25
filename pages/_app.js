@@ -4,7 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ClerkProvider {...pageProps}>
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <Head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <title>Ad Pro AI - Generate High-Converting Ad Copy</title>
