@@ -1,14 +1,35 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
-    <footer className="text-center py-6 text-sm text-gray-600">
-      <div className="space-x-2">
-        <Link href="/privacy" className="hover:text-gray-900">Privacy</Link>
-        <span>•</span>
-        <Link href="/terms" className="hover:text-gray-900">Terms</Link>
-        <span>•</span>
-        <Link href="/impressum" className="hover:text-gray-900">Impressum</Link>
+    <footer className="bg-black text-white border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-6 md:mb-0">
+            <Image
+              src="/logo.png"
+              alt="Ad Pro AI Logo"
+              width={150}
+              height={42}
+              className="h-10 w-auto"
+            />
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-gray-300">
+            <Link href="/privacy" className="hover:text-[#D4AF37] transition">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-[#D4AF37] transition">
+              Terms of Service
+            </Link>
+            <Link href="/impressum" className="hover:text-[#D4AF37] transition">
+              Legal Disclosure
+            </Link>
+          </div>
+          <div className="mt-6 md:mt-0 text-sm text-gray-400">
+            © {new Date().getFullYear()} DSE Group FZCO
+          </div>
+        </div>
       </div>
     </footer>
   )
