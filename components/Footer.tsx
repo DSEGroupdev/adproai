@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import ContactForm from './ContactForm'
 
 export default function Footer() {
   return (
@@ -27,7 +26,6 @@ export default function Footer() {
               <Link href="/impressum" className="hover:text-[#D4AF37] transition">
                 Legal Disclosure
               </Link>
-              <ContactForm />
             </div>
             <div className="mt-4 text-center md:text-left">
               <p className="text-xs text-gray-400">
