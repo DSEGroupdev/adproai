@@ -8,6 +8,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useUser } from '@clerk/nextjs'
 import Footer from '../components/Footer'
+import { loadStripe } from '@stripe/stripe-js'
+
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 export default function Home() {
   const { user, isSignedIn } = useUser();
@@ -79,6 +83,28 @@ export default function Home() {
   const scrollToForm = () => {
     document.getElementById('generator-form').scrollIntoView({ behavior: 'smooth' })
   }
+
+  const handleCheckout = async (priceId) => {
+    try {
+      const response = await fetch('/api/checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      const { sessionId } = await response.json();
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        console.error('Error redirecting to checkout:', error);
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -423,10 +449,10 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={scrollToForm}
+                onClick={() => handleCheckout('prod_SCZw5SW4EWG7gx')}
                 className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium hover:bg-gray-600 transition"
               >
-                Get Started
+                Get Free Plan
               </button>
             </div>
             <div className="bg-gray-800/50 p-8 rounded-xl border-2 border-[#D4AF37] relative">
@@ -450,10 +476,58 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={scrollToForm}
+                onClick={() => handleCheckout('prod_SCZuRWZRi03eGT')}
                 className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
               >
                 Start Free Trial
+              </button>
+            </div>
+            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
+              <h3 className="text-2xl font-bold mb-4">Starter Plan</h3>
+              <p className="text-4xl font-bold mb-6">$9<span className="text-lg text-gray-400">/month</span></p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> 20 ad copies per month
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Email support
+                </li>
+              </ul>
+              <button
+                onClick={() => handleCheckout('prod_SCZtaMJNdutkJC')}
+                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
+                Get Started
+              </button>
+            </div>
+            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
+              <h3 className="text-2xl font-bold mb-4">Agency Plan</h3>
+              <p className="text-4xl font-bold mb-6">$99<span className="text-lg text-gray-400">/month</span></p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> All templates
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> API access
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> White-label options
+                </li>
+              </ul>
+              <button
+                onClick={() => handleCheckout('prod_SCZvvTxnBjt1Wo')}
+                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
+                Contact Sales
               </button>
             </div>
           </div>
