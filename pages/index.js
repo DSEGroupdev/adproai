@@ -29,6 +29,7 @@ export default function Home() {
   const [error, setError] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [checkoutError, setCheckoutError] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,7 +87,10 @@ export default function Home() {
 
   const handleCheckout = async (priceId) => {
     try {
-      const response = await fetch('/api/checkout-session', {
+      setIsLoading(true);
+      setCheckoutError(null);
+
+      const response = await fetch('/api/checkout_sessions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,15 +98,18 @@ export default function Home() {
         body: JSON.stringify({ priceId }),
       });
 
-      const { sessionId } = await response.json();
-      const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-
-      if (error) {
-        console.error('Error redirecting to checkout:', error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create checkout session');
       }
+
+      const { url } = await response.json();
+      window.location.href = url;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error('Checkout error:', error);
+      setCheckoutError(error.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -451,10 +458,18 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZw5SW4EWG7gx')}
-                className="w-full bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition"
+                disabled={isLoading}
+                className="w-full bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition flex items-center justify-center"
               >
-                Get Started
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Get Started'
+                )}
               </button>
+              {checkoutError && (
+                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              )}
             </div>
 
             {/* Starter Plan */}
@@ -474,10 +489,18 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZtaMJNdutkJC')}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                disabled={isLoading}
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                Get Started
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Get Started'
+                )}
               </button>
+              {checkoutError && (
+                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              )}
             </div>
 
             {/* Pro Plan */}
@@ -503,10 +526,18 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZuRWZRi03eGT')}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                disabled={isLoading}
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                Get Started
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Get Started'
+                )}
               </button>
+              {checkoutError && (
+                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              )}
             </div>
 
             {/* Agency Plan */}
@@ -532,10 +563,18 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZvvTxnBjt1Wo')}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                disabled={isLoading}
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                Get Started
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Get Started'
+                )}
               </button>
+              {checkoutError && (
+                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              )}
             </div>
           </div>
         </div>
