@@ -30,6 +30,8 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [copied, setCopied] = useState(false)
   const [checkoutError, setCheckoutError] = useState(null)
+  const [loadingPlan, setLoadingPlan] = useState(null);
+  const [errorPlan, setErrorPlan] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,10 +87,10 @@ export default function Home() {
     document.getElementById('generator-form').scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleCheckout = async (priceId) => {
+  const handleCheckout = async (planKey, priceId) => {
     try {
-      setIsLoading(true);
-      setCheckoutError(null);
+      setLoadingPlan(planKey);
+      setErrorPlan(null);
 
       const response = await fetch('/api/checkout_sessions', {
         method: 'POST',
@@ -107,9 +109,9 @@ export default function Home() {
       window.location.href = url;
     } catch (error) {
       console.error('Checkout error:', error);
-      setCheckoutError(error.message || 'Something went wrong. Please try again.');
+      setErrorPlan(planKey);
     } finally {
-      setIsLoading(false);
+      setLoadingPlan(null);
     }
   };
 
@@ -457,18 +459,18 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('prod_SCZw5SW4EWG7gx')}
-                disabled={isLoading}
+                onClick={() => handleCheckout('free', 'price_1RIAmRJwadrZOO3V3lWJFtKa')}
+                disabled={loadingPlan === 'free'}
                 className="w-full bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {loadingPlan === 'free' ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   'Get Started'
                 )}
               </button>
-              {checkoutError && (
-                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              {errorPlan === 'free' && (
+                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
               )}
             </div>
 
@@ -488,18 +490,18 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('prod_SCZtaMJNdutkJC')}
-                disabled={isLoading}
+                onClick={() => handleCheckout('starter', 'price_1RIAjaJwadrZOO3VczgJKJQV')}
+                disabled={loadingPlan === 'starter'}
                 className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {loadingPlan === 'starter' ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   'Get Started'
                 )}
               </button>
-              {checkoutError && (
-                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              {errorPlan === 'starter' && (
+                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
               )}
             </div>
 
@@ -525,18 +527,18 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('prod_SCZuRWZRi03eGT')}
-                disabled={isLoading}
+                onClick={() => handleCheckout('pro', 'price_1RIAkSJwadrZOO3VURG7Cssr')}
+                disabled={loadingPlan === 'pro'}
                 className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {loadingPlan === 'pro' ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   'Get Started'
                 )}
               </button>
-              {checkoutError && (
-                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              {errorPlan === 'pro' && (
+                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
               )}
             </div>
 
@@ -562,18 +564,18 @@ export default function Home() {
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('prod_SCZvvTxnBjt1Wo')}
-                disabled={isLoading}
+                onClick={() => handleCheckout('agency', 'price_1RIAlZJwadrZOO3VkLGYKMi5')}
+                disabled={loadingPlan === 'agency'}
                 className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                {isLoading ? (
+                {loadingPlan === 'agency' ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
                   'Get Started'
                 )}
               </button>
-              {checkoutError && (
-                <p className="text-red-400 text-sm mt-2">{checkoutError}</p>
+              {errorPlan === 'agency' && (
+                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
               )}
             </div>
           </div>
