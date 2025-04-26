@@ -433,11 +433,12 @@ export default function Home() {
       <section id="pricing" className="py-20 bg-gray-900/50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
-              <h3 className="text-2xl font-bold mb-4">Free Plan</h3>
-              <p className="text-4xl font-bold mb-6">$0<span className="text-lg text-gray-400">/month</span></p>
-              <ul className="space-y-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+              <h3 className="text-xl font-bold mb-4">Free Plan</h3>
+              <p className="text-3xl font-bold mb-4">$0<span className="text-base text-gray-400">/month</span></p>
+              <ul className="space-y-3 mb-6 flex-grow">
                 <li className="flex items-center">
                   <FiCheck className="text-[#D4AF37] mr-2" /> 5 ad copies per month
                 </li>
@@ -450,18 +451,43 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZw5SW4EWG7gx')}
-                className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium hover:bg-gray-600 transition"
+                className="w-full bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition"
               >
-                Get Free Plan
+                Get Started
               </button>
             </div>
-            <div className="bg-gray-800/50 p-8 rounded-xl border-2 border-[#D4AF37] relative">
-              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black px-4 py-1 rounded-bl-lg rounded-tr-lg text-sm font-medium">
+
+            {/* Starter Plan */}
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+              <h3 className="text-xl font-bold mb-4">Starter Plan</h3>
+              <p className="text-3xl font-bold mb-4">$9<span className="text-base text-gray-400">/month</span></p>
+              <ul className="space-y-3 mb-6 flex-grow">
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> 20 ad copies per month
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#D4AF37] mr-2" /> Email support
+                </li>
+              </ul>
+              <button
+                onClick={() => handleCheckout('prod_SCZtaMJNdutkJC')}
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
+                Get Started
+              </button>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="bg-gray-800/50 p-6 rounded-xl border-2 border-[#D4AF37] flex flex-col relative">
+              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black px-3 py-1 rounded-bl-lg rounded-tr-lg text-xs font-medium">
                 Most Popular
               </div>
-              <h3 className="text-2xl font-bold mb-4">Pro Plan</h3>
-              <p className="text-4xl font-bold mb-6">$29<span className="text-lg text-gray-400">/month</span></p>
-              <ul className="space-y-4 mb-8">
+              <h3 className="text-xl font-bold mb-4">Pro Plan</h3>
+              <p className="text-3xl font-bold mb-4">$29<span className="text-base text-gray-400">/month</span></p>
+              <ul className="space-y-3 mb-6 flex-grow">
                 <li className="flex items-center">
                   <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
                 </li>
@@ -477,36 +503,17 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZuRWZRi03eGT')}
-                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
-              >
-                Start Free Trial
-              </button>
-            </div>
-            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
-              <h3 className="text-2xl font-bold mb-4">Starter Plan</h3>
-              <p className="text-4xl font-bold mb-6">$9<span className="text-lg text-gray-400">/month</span></p>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> 20 ad copies per month
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Email support
-                </li>
-              </ul>
-              <button
-                onClick={() => handleCheckout('prod_SCZtaMJNdutkJC')}
-                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
               >
                 Get Started
               </button>
             </div>
-            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700">
-              <h3 className="text-2xl font-bold mb-4">Agency Plan</h3>
-              <p className="text-4xl font-bold mb-6">$99<span className="text-lg text-gray-400">/month</span></p>
-              <ul className="space-y-4 mb-8">
+
+            {/* Agency Plan */}
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+              <h3 className="text-xl font-bold mb-4">Agency Plan</h3>
+              <p className="text-3xl font-bold mb-4">$99<span className="text-base text-gray-400">/month</span></p>
+              <ul className="space-y-3 mb-6 flex-grow">
                 <li className="flex items-center">
                   <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
                 </li>
@@ -525,9 +532,9 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleCheckout('prod_SCZvvTxnBjt1Wo')}
-                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
               >
-                Contact Sales
+                Get Started
               </button>
             </div>
           </div>
