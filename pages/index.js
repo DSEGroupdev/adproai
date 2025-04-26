@@ -435,7 +435,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
               <h3 className="text-xl font-bold mb-4">Free Plan</h3>
               <p className="text-3xl font-bold mb-4">$0<span className="text-base text-gray-400">/month</span></p>
               <ul className="space-y-3 mb-6 flex-grow">
@@ -458,7 +458,7 @@ export default function Home() {
             </div>
 
             {/* Starter Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
               <h3 className="text-xl font-bold mb-4">Starter Plan</h3>
               <p className="text-3xl font-bold mb-4">$9<span className="text-base text-gray-400">/month</span></p>
               <ul className="space-y-3 mb-6 flex-grow">
@@ -481,7 +481,7 @@ export default function Home() {
             </div>
 
             {/* Pro Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border-2 border-[#D4AF37] flex flex-col relative">
+            <div className="bg-gray-800/50 p-6 rounded-xl border-2 border-[#D4AF37] flex flex-col relative transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
               <div className="absolute top-0 right-0 bg-[#D4AF37] text-black px-3 py-1 rounded-bl-lg rounded-tr-lg text-xs font-medium">
                 Most Popular
               </div>
@@ -510,7 +510,7 @@ export default function Home() {
             </div>
 
             {/* Agency Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col">
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
               <h3 className="text-xl font-bold mb-4">Agency Plan</h3>
               <p className="text-3xl font-bold mb-4">$99<span className="text-base text-gray-400">/month</span></p>
               <ul className="space-y-3 mb-6 flex-grow">
