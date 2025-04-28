@@ -42,7 +42,9 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to generate ad copy');
+      const errorText = await response.text();
+      console.error('OpenAI API error:', errorText);
+      return res.status(500).json({ error: 'Failed to generate ad copy', openai: errorText });
     }
 
     const data = await response.json();
@@ -50,18 +52,24 @@ export default async function handler(req, res) {
     try {
       result = JSON.parse(data.choices[0].message.content);
     } catch (e) {
-      return res.status(500).json({ error: 'Invalid response format from AI' });
+      console.error('OpenAI response parse error:', data);
+      return res.status(500).json({ error: 'Invalid response format from AI', openai: data });
     }
 
-    // Save the generated ad copy
-    await prisma.adCopy.create({
-      data: {
-        content: JSON.stringify(result),
-        userId: userId,
-      },
-    });
+    try {
+      // Save the generated ad copy
+      await prisma.adCopy.create({
+        data: {
+          content: JSON.stringify(result),
+          userId: userId,
+        },
+      });
 
-    await incrementAdCount(userId);
+      await incrementAdCount(userId);
+    } catch (prismaError) {
+      console.error('Prisma/Neon error:', prismaError);
+      return res.status(500).json({ error: 'Database error', prisma: prismaError.message });
+    }
 
     return res.status(200).json(result);
 
