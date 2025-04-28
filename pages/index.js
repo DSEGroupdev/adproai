@@ -54,31 +54,32 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch('/api/generate', {
+      const res = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          userId: user?.id,
           product: formData.productName,
           audience: formData.targetAudience,
           usp: formData.productDescription,
           tone: formData.tone,
+          platform: formData.platform,
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate ad copy');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "An error occurred while generating ad copy.");
       }
 
-      const data = await response.json();
-      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.cta}`;
+      const data = await res.json();
+      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.callToAction || data.cta || ''}`;
       setResult(formattedResult);
       setShowModal(true);
-    } catch (err) {
-      console.error('Form submission error:', err);
-      setError(err.message || 'Failed to generate ad copy. Please try again.');
+    } catch (error) {
+      setError(error.message || "Failed to generate ad copy. Please try again.");
     } finally {
       setIsLoading(false);
     }
