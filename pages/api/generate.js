@@ -1,8 +1,5 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { checkAdGenerationLimit, incrementAdCount } from '../../lib/adLimit'
+import prisma from '../../lib/prisma'
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -22,11 +19,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { product, audience, usp, tone } = req.body;
+    const { prompt, userId } = req.body;
 
-    if (!product || !audience || !usp || !tone) {
+    if (!prompt || !userId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+
+    // Check if user has reached their ad generation limit
+    await checkAdGenerationLimit(userId);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview",
