@@ -1,27 +1,22 @@
 import { SignUp } from "@clerk/nextjs";
 
+const appearance = {
+  elements: {
+    card: "bg-[#181c23] border-none",
+    formFieldInput: "bg-white text-black",
+    formFieldInput__code: "bg-white text-black border border-gold-500",
+    formFieldLabel: "text-white",
+    headerTitle: "text-white",
+    headerSubtitle: "text-white",
+    formFieldHintText: "text-white",
+    formFieldErrorText: "text-red-500",
+    socialButtonsBlockButton: "bg-white text-black hover:bg-gold-500 hover:text-white",
+    dividerText: "text-white",
+    footerActionText: "text-white",
+    footerActionLink: "text-gold-500 hover:text-gold-400",
+  },
+};
+
 export default function SignUpPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
-      <SignUp 
-        appearance={{
-          elements: {
-            formButtonPrimary: 'bg-[#D4AF37] hover:bg-[#C19B2E] text-black',
-            card: 'bg-gray-900 border border-gray-800',
-            headerTitle: 'text-white',
-            headerSubtitle: 'text-gray-400',
-            formFieldLabel: 'text-gray-300',
-            formFieldInput: 'bg-gray-800 border-gray-700 text-white',
-            dividerLine: 'bg-gray-800',
-            dividerText: 'text-gray-400',
-            footerActionLink: 'text-[#D4AF37] hover:text-[#C19B2E]'
-          }
-        }}
-        routing="path"
-        path="/sign-up"
-        signInUrl="/sign-in"
-        afterSignUpUrl="/"
-      />
-    </div>
-  );
+  return <SignUp appearance={appearance} />;
 } 

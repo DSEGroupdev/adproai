@@ -2,69 +2,72 @@ import { checkAdGenerationLimit, incrementAdCount } from '../../lib/adLimit'
 import prisma from '../../lib/prisma'
 
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // Only allow POST
   if (req.method !== 'POST') {
-    console.error(`Method ${req.method} Not Allowed`);
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
-    const { prompt, userId } = req.body;
+    const { product, audience, usp, tone, platform, userId } = req.body
 
-    if (!prompt || !userId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!product || !audience || !usp || !tone || !platform || !userId) {
+      return res.status(400).json({ error: 'Missing required fields' })
     }
 
     // Check if user has reached their ad generation limit
-    await checkAdGenerationLimit(userId);
+    await checkAdGenerationLimit(userId)
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [
-        {
-          role: "system",
-          content: "You are an expert copywriter. Return a JSON response with these exact fields: 'headline', 'body', and 'cta'. The response must be a valid JSON object containing these three fields."
-        },
-        {
-          role: "user",
-          content: `Create ad copy for ${product}, targeting ${audience} with a ${tone} tone. USP: ${usp}. Return the response as a JSON object with headline, body, and cta fields.`
-        }
-      ],
-      response_format: { type: "json_object" }
-    });
+    // Compose the prompt for OpenAI
+    const prompt = `Product: ${product}\nAudience: ${audience}\nUSP: ${usp}\nTone: ${tone}\nPlatform: ${platform}`
 
-    const adCopy = JSON.parse(completion.choices[0].message.content);
-    
-    if (!adCopy.headline || !adCopy.body || !adCopy.cta) {
-      throw new Error('Invalid response format from OpenAI');
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert copywriter specializing in creating high-converting ad copy. Generate ad copy in JSON format with the following structure: { "headline": "string", "body": "string", "callToAction": "string" }'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 150
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to generate ad copy')
     }
 
-    return res.status(200).json(adCopy);
+    const data = await response.json()
+    let result
+    try {
+      result = JSON.parse(data.choices[0].message.content)
+    } catch (e) {
+      return res.status(500).json({ error: 'Invalid response format from AI' })
+    }
+
+    // Save the generated ad copy
+    await prisma.adCopy.create({
+      data: {
+        content: JSON.stringify(result),
+        userId: userId
+      }
+    })
+
+    // Increment the user's ad count
+    await incrementAdCount(userId)
+
+    res.status(200).json(result)
   } catch (error) {
-    console.error('API Error:', error);
-    
-    // Handle different types of errors
-    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
-      return res.status(504).json({ error: 'Request timed out' });
-    }
-    
-    if (error.response?.status === 429) {
-      return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
-    }
-    
-    return res.status(error.status || 500).json({ 
-      error: 'Failed to generate ad copy',
-      details: error.message
-    });
+    console.error('Error:', error)
+    res.status(500).json({ error: error.message })
   }
 } 
