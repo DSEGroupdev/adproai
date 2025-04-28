@@ -9,12 +9,14 @@ import { motion } from 'framer-motion'
 import { useUser } from '@clerk/nextjs'
 import Footer from '../components/Footer'
 import { loadStripe } from '@stripe/stripe-js'
+import { useRouter } from 'next/router'
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 export default function Home() {
   const { user, isSignedIn } = useUser();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     productName: '',
     productDescription: '',
@@ -32,13 +34,22 @@ export default function Home() {
   const [checkoutError, setCheckoutError] = useState(null)
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [errorPlan, setErrorPlan] = useState(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [adsRemaining, setAdsRemaining] = useState(5); // Default for free plan
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!isSignedIn) {
-      setError('Please sign in to generate ad copy');
+      router.push('/sign-up');
       return;
     }
+
+    if (adsRemaining <= 0) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -88,6 +99,16 @@ export default function Home() {
   }
 
   const handleCheckout = async (planKey, priceId) => {
+    if (planKey === 'free') {
+      if (!isSignedIn) {
+        router.push('/sign-up');
+        return;
+      }
+      // For free plan, just redirect to dashboard
+      router.push('/dashboard');
+      return;
+    }
+
     try {
       setLoadingPlan(planKey);
       setErrorPlan(null);
@@ -196,8 +217,14 @@ export default function Home() {
             </p>
             <div className="pt-8">
               <button
-                onClick={scrollToForm}
-                className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition transform hover:-translate-y-1 hover:shadow-xl"
+                onClick={() => {
+                  if (!isSignedIn) {
+                    router.push('/sign-up');
+                    return;
+                  }
+                  scrollToForm();
+                }}
+                className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition"
               >
                 {isSignedIn ? 'Generate Ad Copy Now' : 'Try it Free'} <FiArrowRight className="inline-block ml-2" />
               </button>
@@ -354,14 +381,13 @@ export default function Home() {
                     <select
                       value={formData.tone}
                       onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
-                      required
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                     >
                       <option value="">Select Tone</option>
                       <option value="professional">Professional</option>
                       <option value="casual">Casual</option>
                       <option value="friendly">Friendly</option>
-                      <option value="authoritative">Authoritative</option>
+                      <option value="convincing">Convincing</option>
                     </select>
                     <div className="absolute right-2 top-2 group">
                       <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
@@ -659,6 +685,41 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+        </div>
+      )}
+
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-md w-full">
+            <h3 className="text-2xl font-bold mb-4">Upgrade Your Plan</h3>
+            <p className="text-gray-300 mb-6">
+              You've reached your monthly limit. Upgrade your plan to continue creating winning ad copy!
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowUpgradeModal(false)}
+                className="px-4 py-2 text-gray-400 hover:text-white transition"
+              >
+                Maybe Later
+              </button>
+              <button
+                onClick={() => router.push('/pricing')}
+                className="px-4 py-2 bg-[#D4AF37] text-black rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ads Remaining Counter */}
+      {isSignedIn && (
+        <div className="fixed top-4 right-4 bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-700">
+          <p className="text-sm text-gray-300">
+            <span className="text-[#D4AF37] font-medium">{adsRemaining}</span> ads remaining this month
+          </p>
         </div>
       )}
     </div>
