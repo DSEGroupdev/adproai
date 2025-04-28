@@ -9,14 +9,19 @@ export default async function handler(req, res) {
   try {
     const { userId, product, audience, usp, tone, platform } = req.body;
 
-    if (!userId || !product || !audience || !usp || !tone || !platform) {
+    // Only require userId and product
+    if (!userId || !product) {
       return res.status(400).json({ error: "Missing required fields." });
     }
 
     await checkAdGenerationLimit(userId);
 
     // Generate ad copy (mock logic or call OpenAI)
-    const generatedAd = `Generated Ad for ${product} targeting ${audience} with ${usp}, ${tone} tone on ${platform}.`;
+    const generatedAd = `Generated Ad for ${product}` +
+      (audience ? ` targeting ${audience}` : "") +
+      (usp ? ` with ${usp}` : "") +
+      (tone ? `, ${tone} tone` : "") +
+      (platform ? ` on ${platform}` : "") + ".";
 
     await prisma.adCopy.create({
       data: {
