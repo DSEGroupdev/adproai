@@ -650,8 +650,8 @@ export default function Home() {
 
       {/* Result Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4">
-          <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6 relative">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-white">Generated Ad Copy</h3>
               <button
@@ -666,12 +666,17 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-[#D4AF37] font-medium">Headline</h4>
-                <button
-                  onClick={() => handleCopy('headline')}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
-                >
-                  {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() => handleCopy('headline')}
+                    className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  >
+                    {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                  </button>
+                  <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Copy
+                  </div>
+                </div>
               </div>
               <p className="text-white">{result.headline}</p>
             </div>
@@ -680,12 +685,17 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-[#D4AF37] font-medium">Body</h4>
-                <button
-                  onClick={() => handleCopy('body')}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
-                >
-                  {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() => handleCopy('body')}
+                    className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  >
+                    {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                  </button>
+                  <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Copy
+                  </div>
+                </div>
               </div>
               <p className="text-white whitespace-pre-line">{result.body}</p>
             </div>
@@ -694,12 +704,17 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-[#D4AF37] font-medium">Call to Action</h4>
-                <button
-                  onClick={() => handleCopy('callToAction')}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
-                >
-                  {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
-                </button>
+                <div className="relative group">
+                  <button
+                    onClick={() => handleCopy('callToAction')}
+                    className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  >
+                    {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                  </button>
+                  <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Copy
+                  </div>
+                </div>
               </div>
               <p className="text-white">{result.callToAction}</p>
             </div>
