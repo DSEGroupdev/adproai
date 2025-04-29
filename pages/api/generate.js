@@ -1,5 +1,6 @@
 import prisma from "../../lib/prisma";
 import { checkAdGenerationLimit, incrementAdCount } from "../../lib/adLimit";
+import { getAuth } from "@clerk/nextjs/server";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -13,15 +14,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get the user's email from Clerk
+    const { sessionClaims } = getAuth(req);
+    const userEmail = sessionClaims?.email;
+
     let user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
+      if (!userEmail) {
+        return res.status(400).json({ error: "User email not found" });
+      }
+
       user = await prisma.user.create({
         data: {
           id: userId,
-          email: "placeholder@example.com", // Optional for now
+          email: userEmail,
           plan: "FREE",
           adsGenerated: 0,
         },
