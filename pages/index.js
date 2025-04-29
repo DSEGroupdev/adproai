@@ -149,14 +149,19 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="Ad Pro AI Logo"
-                width={200}
-                height={56}
-                className="h-14 w-auto"
-              />
+            <div className="flex items-center space-x-8">
+              <div className="flex-shrink-0">
+                <Image
+                  src="/logo.png"
+                  alt="Ad Pro AI Logo"
+                  width={200}
+                  height={56}
+                  className="h-14 w-auto"
+                />
+              </div>
+              {isSignedIn && (
+                <span className="text-gray-300">Welcome, {user.firstName || user.emailAddresses[0].emailAddress}</span>
+              )}
             </div>
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
@@ -164,12 +169,17 @@ export default function Home() {
               <a href="#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
               {isSignedIn ? (
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-300">Welcome, {user.firstName || user.emailAddresses[0].emailAddress}</span>
                   <button
                     onClick={scrollToForm}
                     className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
                   >
                     Generate Ad Copy
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/sign-out'}
+                    className="text-gray-300 hover:text-white transition"
+                  >
+                    Log Out
                   </button>
                 </div>
               ) : (
