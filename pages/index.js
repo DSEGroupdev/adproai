@@ -27,10 +27,18 @@ export default function Home() {
   })
 
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState('')
+  const [result, setResult] = useState({
+    headline: '',
+    body: '',
+    callToAction: ''
+  });
   const [error, setError] = useState('')
   const [showModal, setShowModal] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState({
+    headline: false,
+    body: false,
+    callToAction: false
+  });
   const [checkoutError, setCheckoutError] = useState(null)
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [errorPlan, setErrorPlan] = useState(null);
@@ -75,7 +83,11 @@ export default function Home() {
       }
 
       const data = await res.json();
-      const formattedResult = `Headline: ${data.headline}\n\nBody: ${data.body}\n\nCall to Action: ${data.callToAction || data.cta || ''}`;
+      const formattedResult = {
+        headline: data.headline,
+        body: data.body,
+        callToAction: data.callToAction || data.cta || ''
+      };
       setResult(formattedResult);
       setShowModal(true);
     } catch (error) {
@@ -85,15 +97,15 @@ export default function Home() {
     }
   };
 
-  const handleCopy = async () => {
+  const handleCopy = async (section) => {
     try {
-      await navigator.clipboard.writeText(result)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(result[section]);
+      setCopied(prev => ({ ...prev, [section]: true }));
+      setTimeout(() => setCopied(prev => ({ ...prev, [section]: false })), 2000);
     } catch (err) {
-      console.error('Failed to copy text: ', err)
+      console.error('Failed to copy text: ', err);
     }
-  }
+  };
 
   const scrollToForm = () => {
     document.getElementById('generator-form').scrollIntoView({ behavior: 'smooth' })
@@ -455,19 +467,19 @@ export default function Home() {
               </div>
             )}
 
-            {result && (
+            {result.headline && (
               <div className="mt-6">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-lg font-medium">Generated Ad Copy</h3>
                   <button
-                    onClick={() => navigator.clipboard.writeText(result)}
+                    onClick={() => handleCopy('headline')}
                     className="text-[#D4AF37] hover:text-[#C19B2E] transition flex items-center"
                   >
                     <FiCopy className="mr-1" /> Copy
                   </button>
                 </div>
                 <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                  <p className="whitespace-pre-wrap">{result}</p>
+                  <p className="whitespace-pre-wrap">{result.headline}</p>
                 </div>
               </div>
             )}
@@ -638,64 +650,69 @@ export default function Home() {
 
       {/* Result Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-2xl w-full relative"
-          >
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
-            >
-              <FiX size={24} />
-            </button>
-            
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-bold">Generated Ad Copy</h3>
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center space-x-2 bg-[#D4AF37]/10 text-[#D4AF37] px-4 py-2 rounded-lg hover:bg-[#D4AF37]/20 transition"
-                >
-                  {copied ? (
-                    <>
-                      <FiCheck className="text-green-500" />
-                      <span>Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <FiCopy />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 space-y-4">
-                {result.split('\n\n').map((section, index) => (
-                  <div key={index} className="space-y-2">
-                    <h4 className="text-[#D4AF37] font-medium">
-                      {section.split(':')[0]}:
-                    </h4>
-                    <p className="text-gray-300">
-                      {section.split(':')[1].trim()}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
-                >
-                  Close
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-white">Generated Ad Copy</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <FiX size={24} />
+              </button>
             </div>
-          </motion.div>
+
+            {/* Headline Section */}
+            <div className="bg-gray-800/50 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-[#D4AF37] font-medium">Headline</h4>
+                <button
+                  onClick={() => handleCopy('headline')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+              </div>
+              <p className="text-white">{result.headline}</p>
+            </div>
+
+            {/* Body Section */}
+            <div className="bg-gray-800/50 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-[#D4AF37] font-medium">Body</h4>
+                <button
+                  onClick={() => handleCopy('body')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+              </div>
+              <p className="text-white whitespace-pre-line">{result.body}</p>
+            </div>
+
+            {/* Call to Action Section */}
+            <div className="bg-gray-800/50 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-[#D4AF37] font-medium">Call to Action</h4>
+                <button
+                  onClick={() => handleCopy('callToAction')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+              </div>
+              <p className="text-white">{result.callToAction}</p>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
