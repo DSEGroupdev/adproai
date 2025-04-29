@@ -15,8 +15,20 @@ export default async function handler(req, res) {
 
   try {
     // Get the user's email from Clerk
-    const { sessionClaims } = getAuth(req);
-    const userEmail = sessionClaims?.email;
+    const { userId: clerkUserId } = getAuth(req);
+    const userResponse = await fetch(`https://api.clerk.dev/v1/users/${clerkUserId}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!userResponse.ok) {
+      throw new Error('Failed to fetch user from Clerk');
+    }
+    
+    const userData = await userResponse.json();
+    const userEmail = userData.email_addresses.find(email => email.id === userData.primary_email_address_id)?.email_address;
 
     let user = await prisma.user.findUnique({
       where: { id: userId },
