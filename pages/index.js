@@ -73,8 +73,13 @@ export default function Home() {
         }
       }
 
-      setAdResult(data.ad);
-      setRemaining(data.remaining);
+      setAdResult({
+        headline: data.headline,
+        body: data.body,
+        callToAction: data.callToAction,
+        targeting: data.targeting
+      });
+      setRemaining(data.adsRemaining);
 
     } catch (err) {
       console.error("Generation error:", err);
