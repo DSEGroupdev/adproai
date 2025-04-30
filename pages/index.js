@@ -3,7 +3,7 @@
 // Force deployment - April 23, 2024 - v3
 import Head from 'next/head'
 import Image from 'next/image'
-import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX } from 'react-icons/fi'
+import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX, FiAlertCircle } from 'react-icons/fi'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useUser } from '@clerk/nextjs'
@@ -43,7 +43,9 @@ export default function Home() {
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [errorPlan, setErrorPlan] = useState(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [adsRemaining, setAdsRemaining] = useState(5); // Default for free plan
+  const [adsRemaining, setAdsRemaining] = useState(3); // Default for free plan, should be updated from API
+  const [currentPlan, setCurrentPlan] = useState(null);
+  const [showLastAdWarning, setShowLastAdWarning] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,24 +74,22 @@ export default function Home() {
         }),
       });
 
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        throw new Error("Failed to parse server response");
-      }
+      const data = await res.json();
 
-      // Check for limit error first, regardless of response status
-      if (data.error && typeof data.error === 'string' && 
-          (data.error.includes('limit') || data.error.includes('upgrade'))) {
+      // Check for limit reached
+      if (res.status === 403 && data.error === "ad_limit_reached") {
         setShowUpgradeModal(true);
         setIsLoading(false);
         return;
       }
 
-      // Then check for other errors
       if (!res.ok) {
-        throw new Error(data.error || "An error occurred while generating ad copy.");
+        throw new Error(data.message || data.error || "An error occurred while generating ad copy");
+      }
+
+      // Update remaining ads count from response
+      if (data.adsRemaining !== undefined) {
+        setAdsRemaining(data.adsRemaining);
       }
 
       const formattedResult = {
@@ -100,16 +100,16 @@ export default function Home() {
       };
       setResult(formattedResult);
       setShowModal(true);
+
+      // Show warning when only 1 ad generation remaining
+      if (data.adsRemaining === 1) {
+        setTimeout(() => {
+          setShowLastAdWarning(true);
+        }, 1500); // Show warning after result modal is visible
+      }
     } catch (error) {
       console.error('Generation error:', error);
-      // Double check for limit-related errors in the catch block
-      if (error.message && (
-          error.message.includes('limit') || 
-          error.message.includes('upgrade'))) {
-        setShowUpgradeModal(true);
-      } else {
-        setError(error.message || "Failed to generate ad copy. Please try again.");
-      }
+      setError(error.message || "Failed to generate ad copy. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +129,7 @@ export default function Home() {
     document.getElementById('generator-form').scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleCheckout = async (planKey, priceId) => {
+  const handleCheckout = async (planKey) => {
     if (planKey === 'free') {
       if (!isSignedIn) {
         router.push('/sign-up');
@@ -149,7 +149,9 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ 
+          priceId: 'price_1RJZw4JwadrZOO3VHKkVArLR' // Updated Premium price ID
+        }),
       });
 
       if (!response.ok) {
@@ -290,6 +292,67 @@ export default function Home() {
       </div>
     );
   };
+
+  // Last Ad Warning Modal
+  const LastAdWarningModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+      <div className="bg-[#111] border border-[#FFD700] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-center text-white">
+        <h2 className="text-xl font-semibold text-[#FFD700] mb-3">⚠️ Last Free Ad Remaining</h2>
+        <p className="text-gray-300 mb-4">
+          You have 1 free ad generation remaining. Upgrade now to unlock 100 generations per month!
+        </p>
+        <div className="bg-gray-900/50 p-4 rounded-lg mb-5">
+          <p className="text-2xl font-bold text-[#FFD700]">$12.99<span className="text-base text-gray-400">/month</span></p>
+        </div>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={() => setShowLastAdWarning(false)}
+            className="px-4 py-2 bg-[#333] hover:bg-[#444] text-white rounded-md"
+          >
+            Use Last Free Ad
+          </button>
+          <button
+            onClick={() => handleCheckout('premium')}
+            className="px-4 py-2 bg-[#FFD700] hover:bg-[#e6c200] text-black font-semibold rounded-md"
+          >
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Update the upgrade modal content
+  const UpgradeModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+      <div className="bg-[#111] border border-[#FFD700] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-center text-white">
+        <h2 className="text-2xl font-semibold text-[#FFD700]">Free Trial Complete</h2>
+        <p className="mt-3 text-sm text-gray-300">
+          You've used all 3 free ad generations.
+        </p>
+        <div className="mt-4 bg-gray-900/50 p-4 rounded-lg">
+          <p className="text-lg font-semibold text-white mb-2">Upgrade to Premium</p>
+          <p className="text-3xl font-bold text-[#FFD700] mb-2">$12.99<span className="text-base text-gray-400">/month</span></p>
+          <p className="text-sm text-gray-300">Generate 100 ads monthly</p>
+        </div>
+
+        <div className="mt-5 flex justify-center gap-4">
+          <button
+            onClick={() => setShowUpgradeModal(false)}
+            className="px-4 py-2 bg-[#333] hover:bg-[#444] text-white rounded-md"
+          >
+            Maybe Later
+          </button>
+          <button
+            onClick={() => handleCheckout('premium')}
+            className="px-4 py-2 bg-[#FFD700] hover:bg-[#e6c200] text-black font-semibold rounded-md"
+          >
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -604,8 +667,30 @@ export default function Home() {
             </form>
 
             {error && (
-              <div className="mt-6 p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
-                {error}
+              <div className="mt-6">
+                {res?.status === 403 ? (
+                  <div className="bg-red-900/50 border border-red-800 rounded-lg p-6 text-center">
+                    <FiAlertCircle className="mx-auto text-red-400 text-2xl mb-2" />
+                    <p className="text-lg font-semibold text-white mb-2">
+                      Monthly Limit Reached
+                    </p>
+                    <p className="text-gray-300 mb-4">
+                      You've reached the monthly limit for your {currentPlan} plan. 
+                      Upgrade now to unlock unlimited ad generations!
+                    </p>
+                    <button
+                      onClick={() => handleCheckout('pro')}
+                      className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition inline-flex items-center"
+                    >
+                      Upgrade to Pro Plan
+                      <FiArrowRight className="ml-2" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
+                    {error}
+                  </div>
+                )}
               </div>
             )}
 
@@ -632,142 +717,90 @@ export default function Home() {
       {/* Pricing Section */}
       <section id="pricing" className="py-20 bg-gray-900/50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Simple, Transparent Pricing</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
-              <h3 className="text-xl font-bold mb-4">Free Plan</h3>
-              <p className="text-3xl font-bold mb-4">$0<span className="text-base text-gray-400">/month</span></p>
-              <ul className="space-y-3 mb-6 flex-grow">
+          <h2 className="text-3xl font-bold text-center mb-4">Simple Pricing</h2>
+          <p className="text-gray-400 text-center mb-12">Try all features free, upgrade for more generations</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Trial */}
+            <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
+              <h3 className="text-xl font-bold mb-4">Free Trial</h3>
+              <p className="text-3xl font-bold mb-4">$0</p>
+              <p className="text-gray-400 mb-6">Try everything we offer</p>
+              <ul className="space-y-3 mb-8 flex-grow">
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> 5 ad copies per month
+                  <FiCheck className="text-[#FFD700] mr-2" /> 3 ad generations
                 </li>
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
+                  <FiCheck className="text-[#FFD700] mr-2" /> All premium features included
                 </li>
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Standard support
+                  <FiCheck className="text-[#FFD700] mr-2" /> Advanced targeting
+                </li>
+                <li className="flex items-center">
+                  <FiCheck className="text-[#FFD700] mr-2" /> All templates
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('free', 'price_1RIAmRJwadrZOO3V3lWJFtKa')}
+                onClick={() => handleCheckout('free')}
                 disabled={loadingPlan === 'free'}
-                className="w-full bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-600 transition flex items-center justify-center"
+                className="w-full bg-gray-700 text-white py-3 rounded-lg font-medium hover:bg-gray-600 transition flex items-center justify-center"
               >
                 {loadingPlan === 'free' ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  'Get Started'
+                  'Start Free Trial'
                 )}
               </button>
-              {errorPlan === 'free' && (
-                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
-              )}
             </div>
 
-            {/* Starter Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
-              <h3 className="text-xl font-bold mb-4">Starter Plan</h3>
-              <p className="text-3xl font-bold mb-4">$9<span className="text-base text-gray-400">/month</span></p>
-              <ul className="space-y-3 mb-6 flex-grow">
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> 20 ad copies per month
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Basic templates
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Email support
-                </li>
-              </ul>
-              <button
-                onClick={() => handleCheckout('starter', 'price_1RIAjaJwadrZOO3VczgJKJQV')}
-                disabled={loadingPlan === 'starter'}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
-              >
-                {loadingPlan === 'starter' ? (
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  'Get Started'
-                )}
-              </button>
-              {errorPlan === 'starter' && (
-                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
-              )}
-            </div>
-
-            {/* Pro Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border-2 border-[#D4AF37] flex flex-col relative transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
-              <div className="absolute top-0 right-0 bg-[#D4AF37] text-black px-3 py-1 rounded-bl-lg rounded-tr-lg text-xs font-medium">
+            {/* Premium Plan */}
+            <div className="bg-gray-800/50 p-8 rounded-xl border-2 border-[#FFD700] flex flex-col relative transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
+              <div className="absolute top-0 right-0 bg-[#FFD700] text-black px-3 py-1 rounded-bl-lg rounded-tr-lg text-xs font-medium">
                 Most Popular
               </div>
-              <h3 className="text-xl font-bold mb-4">Pro Plan</h3>
-              <p className="text-3xl font-bold mb-4">$29<span className="text-base text-gray-400">/month</span></p>
-              <ul className="space-y-3 mb-6 flex-grow">
+              <h3 className="text-xl font-bold mb-4">Premium</h3>
+              <p className="text-3xl font-bold mb-4">$12.99<span className="text-base text-gray-400">/month</span></p>
+              <p className="text-gray-400 mb-6">For consistent content creators</p>
+              <ul className="space-y-3 mb-8 flex-grow">
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
+                  <FiCheck className="text-[#FFD700] mr-2" /> 100 ad generations monthly
                 </li>
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Advanced templates
+                  <FiCheck className="text-[#FFD700] mr-2" /> All premium features included
                 </li>
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
+                  <FiCheck className="text-[#FFD700] mr-2" /> Advanced targeting
                 </li>
                 <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Custom tone training
+                  <FiCheck className="text-[#FFD700] mr-2" /> Priority support
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('pro', 'price_1RIAkSJwadrZOO3VURG7Cssr')}
-                disabled={loadingPlan === 'pro'}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
+                onClick={() => handleCheckout('premium')}
+                disabled={loadingPlan === 'premium'}
+                className="w-full bg-[#FFD700] text-black py-3 rounded-lg font-medium hover:bg-[#e6c200] transition flex items-center justify-center"
               >
-                {loadingPlan === 'pro' ? (
+                {loadingPlan === 'premium' ? (
                   <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  'Get Started'
+                  'Upgrade to Premium'
                 )}
               </button>
-              {errorPlan === 'pro' && (
-                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
-              )}
             </div>
+          </div>
 
-            {/* Agency Plan */}
-            <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 flex flex-col transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] lg:hover:translate-y-[-4px]">
-              <h3 className="text-xl font-bold mb-4">Agency Plan</h3>
-              <p className="text-3xl font-bold mb-4">$99<span className="text-base text-gray-400">/month</span></p>
-              <ul className="space-y-3 mb-6 flex-grow">
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad copies
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> All templates
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> API access
-                </li>
-                <li className="flex items-center">
-                  <FiCheck className="text-[#D4AF37] mr-2" /> White-label options
-                </li>
-              </ul>
-              <button
-                onClick={() => handleCheckout('agency', 'price_1RIAlZJwadrZOO3VkLGYKMi5')}
-                disabled={loadingPlan === 'agency'}
-                className="w-full bg-[#D4AF37] text-black py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
-              >
-                {loadingPlan === 'agency' ? (
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  'Get Started'
-                )}
-              </button>
-              {errorPlan === 'agency' && (
-                <p className="text-red-400 text-sm mt-2">Failed to start checkout. Please try again.</p>
-              )}
+          <div className="mt-12 text-center">
+            <p className="text-gray-400">All plans include:</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-6">
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#FFD700] mr-2" /> Advanced targeting
+              </div>
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#FFD700] mr-2" /> All premium features
+              </div>
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#FFD700] mr-2" /> Cancel anytime
+              </div>
             </div>
           </div>
         </div>
@@ -800,53 +833,11 @@ export default function Home() {
         />
       )}
 
-      {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-[#181c23] border border-gray-800 rounded-xl p-8 max-w-md w-full">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#D4AF37]/10 rounded-full mb-4">
-                <FiZap className="text-[#D4AF37] text-2xl" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Upgrade to Generate More Ads</h3>
-              <p className="text-gray-300 mb-4">
-                You've reached your monthly limit of 5 free ad generations. Upgrade now to create unlimited high-converting ads!
-              </p>
-            </div>
+      {/* Show Last Ad Warning Modal */}
+      {showLastAdWarning && <LastAdWarningModal />}
 
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center text-sm text-gray-300">
-                <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad generations
-              </div>
-              <div className="flex items-center text-sm text-gray-300">
-                <FiCheck className="text-[#D4AF37] mr-2" /> Advanced targeting suggestions
-              </div>
-              <div className="flex items-center text-sm text-gray-300">
-                <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
-              </div>
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              <button
-                onClick={() => {
-                  setShowUpgradeModal(false);
-                  handleCheckout('pro', 'price_1RIAkSJwadrZOO3VURG7Cssr');
-                }}
-                className="w-full bg-[#D4AF37] text-black px-6 py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
-              >
-                Upgrade to Pro - $29/month
-                <FiArrowRight className="ml-2" />
-              </button>
-              <button
-                onClick={() => setShowUpgradeModal(false)}
-                className="text-gray-400 hover:text-white transition text-sm"
-              >
-                Maybe Later
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Show Upgrade Modal */}
+      {showUpgradeModal && <UpgradeModal />}
 
       {/* Ads Remaining Counter */}
       {isSignedIn && (

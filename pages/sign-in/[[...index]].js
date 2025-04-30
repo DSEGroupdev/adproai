@@ -18,5 +18,11 @@ const appearance = {
 };
 
 export default function SignInPage() {
-  return <SignIn appearance={appearance} />;
+  return (
+    <SignIn 
+      appearance={appearance} 
+      verifyEmailWith="code"
+      verificationTimeout={300}
+    />
+  );
 } 

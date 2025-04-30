@@ -18,5 +18,11 @@ const appearance = {
 };
 
 export default function SignUpPage() {
-  return <SignUp appearance={appearance} />;
+  return (
+    <SignUp 
+      appearance={appearance} 
+      verifyEmailWith="code"
+      verificationTimeout={300}
+    />
+  );
 } 
