@@ -52,7 +52,7 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-4">
+        <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto">
           {/* Free Plan */}
           <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
             <div className="p-6">
@@ -94,61 +94,20 @@ export default function Pricing() {
             </div>
           </div>
 
-          {/* Starter Plan */}
+          {/* Premium Plan */}
           <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
             <div className="p-6">
-              <h2 className="text-lg leading-6 font-medium text-gray-900">Starter</h2>
-              <p className="mt-4 text-sm text-gray-500">For small businesses</p>
-              <p className="mt-8">
-                <span className="text-4xl font-extrabold text-gray-900">$9</span>
-                <span className="text-base font-medium text-gray-500">/month</span>
-              </p>
-              <button
-                onClick={() => handleUpgrade('price_1QeQwj2eZvKYlo2C0JxJ2eZv')}
-                className="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700"
-              >
-                Upgrade to Starter
-              </button>
-            </div>
-            <div className="pt-6 pb-8 px-6">
-              <h3 className="text-xs font-semibold text-gray-900 tracking-wide uppercase">What's included</h3>
-              <ul className="mt-6 space-y-4">
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">20 ad generations per month</span>
-                </li>
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Basic ad copy generation</span>
-                </li>
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Standard support</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Pro Plan */}
-          <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
-            <div className="p-6">
-              <h2 className="text-lg leading-6 font-medium text-gray-900">Pro</h2>
+              <h2 className="text-lg leading-6 font-medium text-gray-900">Premium</h2>
               <p className="mt-4 text-sm text-gray-500">For growing businesses</p>
               <p className="mt-8">
-                <span className="text-4xl font-extrabold text-gray-900">$29</span>
+                <span className="text-4xl font-extrabold text-gray-900">$12.99</span>
                 <span className="text-base font-medium text-gray-500">/month</span>
               </p>
               <button
                 onClick={() => handleUpgrade('price_1QeQwj2eZvKYlo2C0JxJ2eZv')}
                 className="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700"
               >
-                Upgrade to Pro
+                Upgrade to Premium
               </button>
             </div>
             <div className="pt-6 pb-8 px-6">
@@ -158,7 +117,7 @@ export default function Pricing() {
                   <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-gray-500">Unlimited ad generations</span>
+                  <span className="text-sm text-gray-500">100 ad generations per month</span>
                 </li>
                 <li className="flex space-x-3">
                   <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -171,47 +130,6 @@ export default function Pricing() {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                   <span className="text-sm text-gray-500">Priority support</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Agency Plan */}
-          <div className="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
-            <div className="p-6">
-              <h2 className="text-lg leading-6 font-medium text-gray-900">Agency</h2>
-              <p className="mt-4 text-sm text-gray-500">For agencies and large teams</p>
-              <p className="mt-8">
-                <span className="text-4xl font-extrabold text-gray-900">$99</span>
-                <span className="text-base font-medium text-gray-500">/month</span>
-              </p>
-              <button
-                onClick={() => handleUpgrade('price_1QeQwj2eZvKYlo2C0JxJ2eZv')}
-                className="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700"
-              >
-                Upgrade to Agency
-              </button>
-            </div>
-            <div className="pt-6 pb-8 px-6">
-              <h3 className="text-xs font-semibold text-gray-900 tracking-wide uppercase">What's included</h3>
-              <ul className="mt-6 space-y-4">
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Unlimited ad generations</span>
-                </li>
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Advanced ad copy generation</span>
-                </li>
-                <li className="flex space-x-3">
-                  <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-500">Dedicated support</span>
                 </li>
               </ul>
             </div>
