@@ -322,32 +322,26 @@ export default function Home() {
     </div>
   );
 
-  // Update the upgrade modal content
+  // Upgrade Modal
   const UpgradeModal = () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-      <div className="bg-[#111] border border-[#FFD700] p-6 rounded-xl shadow-lg w-[90%] max-w-md text-center text-white">
-        <h2 className="text-2xl font-semibold text-[#FFD700]">Free Trial Complete</h2>
-        <p className="mt-3 text-sm text-gray-300">
-          You've used all 3 free ad generations.
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <h3 className="text-2xl font-bold text-gray-900 mb-4">Upgrade to Premium</h3>
+        <p className="text-gray-600 mb-6">
+          You've reached your monthly limit of 5 ad generations. Upgrade to unlock unlimited generations and more features!
         </p>
-        <div className="mt-4 bg-gray-900/50 p-4 rounded-lg">
-          <p className="text-lg font-semibold text-white mb-2">Upgrade to Premium</p>
-          <p className="text-3xl font-bold text-[#FFD700] mb-2">$12.99<span className="text-base text-gray-400">/month</span></p>
-          <p className="text-sm text-gray-300">Generate 100 ads monthly</p>
-        </div>
-
-        <div className="mt-5 flex justify-center gap-4">
+        <div className="space-y-4">
           <button
-            onClick={() => setShowUpgradeModal(false)}
-            className="px-4 py-2 bg-[#333] hover:bg-[#444] text-white rounded-md"
+            onClick={() => router.push('/pricing')}
+            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
           >
-            Maybe Later
+            View Pricing Plans
           </button>
           <button
-            onClick={() => handleCheckout('premium')}
-            className="px-4 py-2 bg-[#FFD700] hover:bg-[#e6c200] text-black font-semibold rounded-md"
+            onClick={() => setShowUpgradeModal(false)}
+            className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
           >
-            Upgrade Now
+            Maybe Later
           </button>
         </div>
       </div>
