@@ -8,9 +8,13 @@ export default function Pricing() {
   const router = useRouter();
 
   useEffect(() => {
-    // If user comes back from Stripe checkout, redirect to dashboard
+    // Handle Stripe checkout completion
     if (router.query.session_id) {
+      // Successful payment - redirect to dashboard
       router.push('/dashboard');
+    } else if (router.query.cancelled) {
+      // Cancelled payment - redirect to home
+      router.push('/');
     }
   }, [router]);
 
@@ -34,9 +38,13 @@ export default function Pricing() {
 
       if (error) {
         console.error('Error:', error);
+        // If there's an error, redirect back to home
+        router.push('/');
       }
     } catch (error) {
       console.error('Error:', error);
+      // If there's an error, redirect back to home
+      router.push('/');
     }
   };
 
@@ -76,7 +84,7 @@ export default function Pricing() {
                   <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-sm text-gray-500">5 ad generations per month</span>
+                  <span className="text-sm text-gray-500">3 ad generations per month</span>
                 </li>
                 <li className="flex space-x-3">
                   <svg className="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
