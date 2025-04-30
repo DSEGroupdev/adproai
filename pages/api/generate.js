@@ -127,19 +127,17 @@ ${allowTargetingConfig ? 'Suggested Targeting for ' + platform + ':' : ''}
       temperature: 0.7,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      return res.status(500).json({ error: 'Failed to generate ad copy', openai: errorText });
+    if (!response) {
+      console.error('OpenAI API error: No response received');
+      return res.status(500).json({ error: 'Failed to generate ad copy', openai: 'No response received' });
     }
 
-    const data = await response.json();
     let result;
     try {
-      result = JSON.parse(data.choices[0].message.content);
+      result = JSON.parse(response.choices[0].message.content);
     } catch (e) {
-      console.error('OpenAI response parse error:', data);
-      return res.status(500).json({ error: 'Invalid response format from AI', openai: data });
+      console.error('OpenAI response parse error:', response);
+      return res.status(500).json({ error: 'Invalid response format from AI', openai: response });
     }
 
     // Save the generated ad copy
@@ -155,7 +153,7 @@ ${allowTargetingConfig ? 'Suggested Targeting for ' + platform + ':' : ''}
     return res.status(200).json(result);
 
   } catch (error) {
-    console.error("API Error:", error.response?.data || error.message || error);
+    console.error("API Error:", error);
     return res.status(500).json({ error: "Server error while generating ad copy." });
   }
 } 
