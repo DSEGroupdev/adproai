@@ -42,7 +42,10 @@ export default function Home() {
   const [currentPlan, setCurrentPlan] = useState(null);
   const [showLastAdWarning, setShowLastAdWarning] = useState(false);
 
-  const handleGenerateAd = async () => {
+  const handleGenerateAd = async (e) => {
+    if (e) {
+      e.preventDefault(); // Prevent form submission
+    }
     try {
       setIsLoading(true);
       setError(null);
