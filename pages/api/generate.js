@@ -134,9 +134,19 @@ ${allowTargetingConfig ? 'Suggested Targeting for ' + platform + ':' : ''}
 
     let result;
     try {
-      result = JSON.parse(response.choices[0].message.content);
+      // Extract the content from the response
+      const content = response.choices[0].message.content;
+      
+      // Parse the content into sections
+      const sections = content.split('\n\n');
+      result = {
+        headline: sections.find(s => s.startsWith('Headline:'))?.replace('Headline:', '').trim() || '',
+        body: sections.find(s => s.startsWith('Body:'))?.replace('Body:', '').trim() || '',
+        callToAction: sections.find(s => s.startsWith('Call to Action:'))?.replace('Call to Action:', '').trim() || '',
+        targeting: sections.find(s => s.startsWith('Suggested Targeting for'))?.replace(/Suggested Targeting for .*:/, '').trim() || ''
+      };
     } catch (e) {
-      console.error('OpenAI response parse error:', response);
+      console.error('OpenAI response parse error:', e);
       return res.status(500).json({ error: 'Invalid response format from AI', openai: response });
     }
 
