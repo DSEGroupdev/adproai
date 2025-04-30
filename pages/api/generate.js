@@ -27,23 +27,28 @@ export default async function handler(req, res) {
     });
 
     if (!user) {
-      // Fetch user email from Clerk
-      const clerkUser = await clerkClient.users.getUser(userId);
-      const email = clerkUser.emailAddresses[0]?.emailAddress;
+      try {
+        // Fetch user email from Clerk
+        const clerkUser = await clerkClient.users.getUser(userId);
+        const email = clerkUser.emailAddresses?.[0]?.emailAddress;
 
-      if (!email) {
-        return res.status(400).json({ error: "User email not found in Clerk." });
+        if (!email) {
+          return res.status(400).json({ error: "User email not found in Clerk." });
+        }
+
+        user = await prisma.user.create({
+          data: {
+            id: userId,
+            clerkId: userId,
+            email,
+            plan: "FREE",
+            adsGenerated: 0
+          },
+        });
+      } catch (error) {
+        console.error('Error fetching Clerk user:', error);
+        return res.status(500).json({ error: "Failed to fetch user data from Clerk." });
       }
-
-      user = await prisma.user.create({
-        data: {
-          id: userId,
-          clerkId: userId,
-          email,
-          plan: "FREE",
-          adsGenerated: 0
-        },
-      });
     }
 
     // Check ad generation limits
