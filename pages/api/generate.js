@@ -4,7 +4,6 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  timeout: 10000, // 10 second timeout
 });
 
 const FREE_TIER_LIMIT = 3;
@@ -112,9 +111,6 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
 
   } catch (error) {
     console.error('Error generating ad copy:', error);
-    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
-      return res.status(504).json({ error: "Generation timed out. Try again." });
-    }
     return res.status(500).json({ error: "Failed to generate ad copy. Please try again." });
   }
 } 
