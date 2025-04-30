@@ -1,4 +1,5 @@
 import { getAuth } from '@clerk/nextjs/server';
+import { clerkClient } from "@clerk/nextjs";
 import prisma from '../../lib/prisma';
 import OpenAI from 'openai';
 
@@ -26,13 +27,21 @@ export default async function handler(req, res) {
     });
 
     if (!user) {
+      // Fetch user email from Clerk
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email = clerkUser.emailAddresses[0]?.emailAddress;
+
+      if (!email) {
+        return res.status(400).json({ error: "User email not found in Clerk." });
+      }
+
       user = await prisma.user.create({
         data: {
           id: userId,
-          email: `${userId}@adproai.com`, // Temporary email until we get the real one
           clerkId: userId,
-          plan: 'FREE',
-          adsGenerated: 0,
+          email,
+          plan: "FREE",
+          adsGenerated: 0
         },
       });
     }
