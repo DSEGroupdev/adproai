@@ -71,20 +71,35 @@ Please provide:
 
 Format the response as JSON with these keys: headline, body, callToAction, targeting`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are an expert copywriter specializing in social media ads. Provide responses in JSON format."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-    });
+    // Set up timeout handling
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10 sec timeout
+
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert copywriter specializing in social media ads. Provide responses in JSON format."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 300,
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return res.status(504).json({ error: "Generation timed out. Try again." });
+      }
+      throw error;
+    }
 
     // Parse the response
     const responseText = completion.choices[0].message.content;
@@ -98,30 +113,18 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
 
     // Increment ads generated count
     await prisma.user.update({
-      where: { id: user.id },
-      data: { adsGenerated: { increment: 1 } },
+      where: { id: userId },
+      data: { adsGenerated: { increment: 1 } }
     });
 
-    // Get updated ads remaining count
-    const adsRemaining = limit - (user.adsGenerated + 1);
-
-    // Save the generated ad copy
-    await prisma.adCopy.create({
-      data: {
-        userId: user.id,
-        content: responseText,
-        platform,
-      },
-    });
-
-    // Return the generated ad copy with remaining ads count
+    // Return the generated ad copy
     return res.status(200).json({
       ...adCopy,
-      adsRemaining,
+      adsRemaining: limit - (user.adsGenerated + 1)
     });
 
   } catch (error) {
-    console.error('Generation error:', error);
-    return res.status(500).json({ error: 'Failed to generate ad copy' });
+    console.error('Error generating ad copy:', error);
+    return res.status(500).json({ error: "Failed to generate ad copy. Please try again." });
   }
 } 
