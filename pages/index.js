@@ -72,15 +72,23 @@ export default function Home() {
         }),
       });
 
-      const data = await res.json();
-      
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        throw new Error("Failed to parse server response");
+      }
+
+      // Check for limit error first, regardless of response status
+      if (data.error && typeof data.error === 'string' && 
+          (data.error.includes('limit') || data.error.includes('upgrade'))) {
+        setShowUpgradeModal(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // Then check for other errors
       if (!res.ok) {
-        // Check for the limit error message
-        if (data.error && data.error.includes('monthly ad generation limit')) {
-          setShowUpgradeModal(true);
-          setIsLoading(false);
-          return;
-        }
         throw new Error(data.error || "An error occurred while generating ad copy.");
       }
 
@@ -93,7 +101,11 @@ export default function Home() {
       setResult(formattedResult);
       setShowModal(true);
     } catch (error) {
-      if (error.message && error.message.includes('monthly ad generation limit')) {
+      console.error('Generation error:', error);
+      // Double check for limit-related errors in the catch block
+      if (error.message && (
+          error.message.includes('limit') || 
+          error.message.includes('upgrade'))) {
         setShowUpgradeModal(true);
       } else {
         setError(error.message || "Failed to generate ad copy. Please try again.");
