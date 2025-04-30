@@ -22,13 +22,13 @@ export default async function handler(req, res) {
 
     // Get or create user
     let user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { id: userId },
     });
 
     if (!user) {
       user = await prisma.user.create({
         data: {
-          clerkId: userId,
+          id: userId,
           plan: 'FREE',
           adsGenerated: 0,
         },
