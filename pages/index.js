@@ -59,13 +59,12 @@ export default function Home() {
     setError(null);
 
     try {
-      const res = await fetch('/api/generate', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user?.id,
           product: formData.productName,
           audience: formData.targetAudience,
           usp: formData.productDescription,
@@ -74,17 +73,17 @@ export default function Home() {
         }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
       // Check for limit reached
-      if (res.status === 403 && data.error === "ad_limit_reached") {
+      if (response.status === 403 && data.error === "ad_limit_reached") {
         setShowUpgradeModal(true);
         setIsLoading(false);
         return;
       }
 
-      if (!res.ok) {
-        throw new Error(data.message || data.error || "An error occurred while generating ad copy");
+      if (!response.ok) {
+        throw new Error(data.error || "An error occurred while generating ad copy");
       }
 
       // Update remaining ads count from response

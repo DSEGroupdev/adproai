@@ -50,6 +50,10 @@ export default async function handler(req, res) {
     // Extract request data
     const { product, audience, usp, tone, platform } = req.body;
 
+    if (!product || !audience || !usp || !tone || !platform) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     // Generate ad copy using OpenAI
     const prompt = `Create a compelling ad for ${platform} with the following details:
 Product: ${product}
@@ -82,7 +86,13 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
 
     // Parse the response
     const responseText = completion.choices[0].message.content;
-    const adCopy = JSON.parse(responseText);
+    let adCopy;
+    try {
+      adCopy = JSON.parse(responseText);
+    } catch (error) {
+      console.error('Error parsing OpenAI response:', error);
+      return res.status(500).json({ error: 'Failed to parse ad copy response' });
+    }
 
     // Increment ads generated count
     await prisma.user.update({
