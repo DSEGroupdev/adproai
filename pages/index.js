@@ -53,11 +53,6 @@ export default function Home() {
       return;
     }
 
-    if (adsRemaining <= 0) {
-      setShowUpgradeModal(true);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
@@ -78,7 +73,11 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        const errorData = await res.json();
+        if (errorData.error?.includes('monthly ad generation limit')) {
+          setShowUpgradeModal(true);
+          return;
+        }
         throw new Error(errorData.error || "An error occurred while generating ad copy.");
       }
 
@@ -86,7 +85,8 @@ export default function Home() {
       const formattedResult = {
         headline: data.headline,
         body: data.body,
-        callToAction: data.callToAction || data.cta || ''
+        callToAction: data.callToAction || data.cta || '',
+        targeting: data.targeting || ''
       };
       setResult(formattedResult);
       setShowModal(true);
@@ -785,23 +785,45 @@ export default function Home() {
       {/* Upgrade Modal */}
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 max-w-md w-full">
-            <h3 className="text-2xl font-bold mb-4">Upgrade Your Plan</h3>
-            <p className="text-gray-300 mb-6">
-              You've reached your monthly limit. Upgrade your plan to continue creating winning ad copy!
-            </p>
-            <div className="flex justify-end space-x-4">
+          <div className="bg-[#181c23] border border-gray-800 rounded-xl p-8 max-w-md w-full">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#D4AF37]/10 rounded-full mb-4">
+                <FiZap className="text-[#D4AF37] text-2xl" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Upgrade to Generate More Ads</h3>
+              <p className="text-gray-300 mb-4">
+                You've reached your monthly limit of 5 free ad generations. Upgrade now to create unlimited high-converting ads!
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#D4AF37] mr-2" /> Unlimited ad generations
+              </div>
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#D4AF37] mr-2" /> Advanced targeting suggestions
+              </div>
+              <div className="flex items-center text-sm text-gray-300">
+                <FiCheck className="text-[#D4AF37] mr-2" /> Priority support
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-3">
               <button
-                onClick={() => setShowUpgradeModal(false)}
-                className="px-4 py-2 text-gray-400 hover:text-white transition"
+                onClick={() => {
+                  setShowUpgradeModal(false);
+                  handleCheckout('pro', 'price_1RIAkSJwadrZOO3VURG7Cssr');
+                }}
+                className="w-full bg-[#D4AF37] text-black px-6 py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
               >
-                Maybe Later
+                Upgrade to Pro - $29/month
+                <FiArrowRight className="ml-2" />
               </button>
               <button
-                onClick={() => router.push('/pricing')}
-                className="px-4 py-2 bg-[#D4AF37] text-black rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                onClick={() => setShowUpgradeModal(false)}
+                className="text-gray-400 hover:text-white transition text-sm"
               >
-                Upgrade Now
+                Maybe Later
               </button>
             </div>
           </div>
