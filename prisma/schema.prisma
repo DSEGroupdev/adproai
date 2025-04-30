@@ -12,6 +12,7 @@ datasource db {
 
 model User {
   id           String   @id @default(cuid())
+  email        String   @unique
   clerkId      String   @unique
   plan         String   @default("FREE") // Only "FREE" or "PREMIUM"
   adsGenerated Int      @default(0)
