@@ -14,7 +14,7 @@ model User {
   id           String   @id @default(cuid())
   email        String   @unique
   clerkId      String   @unique
-  plan         String   @default("FREE") // Only "FREE" or "PREMIUM"
+  plan         Plan     @default(FREE)
   adsGenerated Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -32,5 +32,5 @@ model AdCopy {
 
 enum Plan {
   FREE
-  PRO
+  PREMIUM
 } 
