@@ -8,9 +8,9 @@ export default function Pricing() {
   const router = useRouter();
 
   useEffect(() => {
-    // If user comes back from Stripe checkout, redirect to home
+    // If user comes back from Stripe checkout, redirect to dashboard
     if (router.query.session_id) {
-      router.push('/');
+      router.push('/dashboard');
     }
   }, [router]);
 
