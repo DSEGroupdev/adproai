@@ -20,7 +20,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // Get or create user
+    // Get or create user in our database
     let user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -29,6 +29,8 @@ export default async function handler(req, res) {
       user = await prisma.user.create({
         data: {
           id: userId,
+          email: `${userId}@adproai.com`, // Temporary email until we get the real one
+          clerkId: userId,
           plan: 'FREE',
           adsGenerated: 0,
         },
