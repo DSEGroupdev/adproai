@@ -27,13 +27,10 @@ export default function Home() {
   })
 
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState({
-    headline: '',
-    body: '',
-    callToAction: ''
-  });
-  const [error, setError] = useState('')
-  const [showModal, setShowModal] = useState(false)
+  const [adResult, setAdResult] = useState(null)
+  const [remaining, setRemaining] = useState(null)
+  const [error, setError] = useState(null)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [copied, setCopied] = useState({
     headline: false,
     body: false,
@@ -42,73 +39,46 @@ export default function Home() {
   const [checkoutError, setCheckoutError] = useState(null)
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [errorPlan, setErrorPlan] = useState(null);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [adsRemaining, setAdsRemaining] = useState(3); // Default for free plan, should be updated from API
   const [currentPlan, setCurrentPlan] = useState(null);
   const [showLastAdWarning, setShowLastAdWarning] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!isSignedIn) {
-      router.push('/sign-up');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
+  const handleGenerateAd = async () => {
     try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      setIsLoading(true);
+      setError(null);
+      setAdResult(null);
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userId: user?.id,
           product: formData.productName,
           audience: formData.targetAudience,
           usp: formData.productDescription,
           tone: formData.tone,
           platform: formData.platform,
+          targeting: formData.targeting
         }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      // Check for limit reached
-      if (response.status === 403 && data.error === "ad_limit_reached") {
-        setShowUpgradeModal(true);
-        setIsLoading(false);
-        return;
+      if (!res.ok) {
+        if (data.error === "ad_limit_reached") {
+          setShowUpgradeModal(true);
+          return;
+        } else {
+          throw new Error(data.error || "Failed to generate ad copy.");
+        }
       }
 
-      if (!response.ok) {
-        throw new Error(data.error || "An error occurred while generating ad copy");
-      }
+      setAdResult(data.ad);
+      setRemaining(data.remaining);
 
-      // Update remaining ads count from response
-      if (data.adsRemaining !== undefined) {
-        setAdsRemaining(data.adsRemaining);
-      }
-
-      const formattedResult = {
-        headline: data.headline,
-        body: data.body,
-        callToAction: data.callToAction || data.cta || '',
-        targeting: data.targeting || ''
-      };
-      setResult(formattedResult);
-      setShowModal(true);
-
-      // Show warning when only 1 ad generation remaining
-      if (data.adsRemaining === 1) {
-        setTimeout(() => {
-          setShowLastAdWarning(true);
-        }, 1500); // Show warning after result modal is visible
-      }
-    } catch (error) {
-      console.error('Generation error:', error);
-      setError(error.message || "Failed to generate ad copy. Please try again.");
+    } catch (err) {
+      console.error("Generation error:", err);
+      setError(err.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +86,7 @@ export default function Home() {
 
   const handleCopy = async (section) => {
     try {
-      await navigator.clipboard.writeText(result[section]);
+      await navigator.clipboard.writeText(adResult[section]);
       setCopied(prev => ({ ...prev, [section]: true }));
       setTimeout(() => setCopied(prev => ({ ...prev, [section]: false })), 2000);
     } catch (err) {
@@ -537,7 +507,7 @@ export default function Home() {
         <div className="max-w-3xl mx-auto">
           <div className="bg-gray-900 p-8 rounded-xl border border-gray-800">
             <h2 className="text-2xl font-bold mb-6">Generate Your Ad Copy</h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleGenerateAd} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">Product Name</label>
@@ -659,48 +629,22 @@ export default function Home() {
               </button>
             </form>
 
-            {error && (
-              <div className="mt-6">
-                {res?.status === 403 ? (
-                  <div className="bg-red-900/50 border border-red-800 rounded-lg p-6 text-center">
-                    <FiAlertCircle className="mx-auto text-red-400 text-2xl mb-2" />
-                    <p className="text-lg font-semibold text-white mb-2">
-                      Monthly Limit Reached
-                    </p>
-                    <p className="text-gray-300 mb-4">
-                      You've reached the monthly limit for your {currentPlan} plan. 
-                      Upgrade now to unlock unlimited ad generations!
-                    </p>
-                    <button
-                      onClick={() => handleCheckout('pro')}
-                      className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition inline-flex items-center"
-                    >
-                      Upgrade to Pro Plan
-                      <FiArrowRight className="ml-2" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="p-4 bg-red-900/50 border border-red-800 rounded-lg text-red-200">
-                    {error}
-                  </div>
-                )}
-              </div>
+            {remaining !== null && (
+              <p className="text-sm text-gray-400 mt-2">
+                {remaining} ad generations remaining this month
+              </p>
             )}
 
-            {result.headline && (
-              <div className="mt-6">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-lg font-medium">Generated Ad Copy</h3>
-                  <button
-                    onClick={() => handleCopy('headline')}
-                    className="text-[#D4AF37] hover:text-[#C19B2E] transition flex items-center"
-                  >
-                    <FiCopy className="mr-1" /> Copy
-                  </button>
-                </div>
-                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                  <p className="whitespace-pre-wrap">{result.headline}</p>
-                </div>
+            {error && (
+              <p className="text-sm text-red-500 mt-2">
+                {error}
+              </p>
+            )}
+
+            {adResult && (
+              <div className="mt-6 bg-black text-white p-4 rounded-lg border border-gold shadow">
+                <h3 className="text-lg font-semibold text-gold mb-2">Generated Ad</h3>
+                <pre className="whitespace-pre-wrap text-sm">{adResult}</pre>
               </div>
             )}
           </div>
@@ -817,11 +761,11 @@ export default function Home() {
       <Footer />
 
       {/* Result Modal */}
-      {showModal && (
+      {adResult && (
         <ResultModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          result={result}
+          isOpen={true}
+          onClose={() => {}}
+          result={adResult}
           platform={formData.platform}
         />
       )}
@@ -831,15 +775,6 @@ export default function Home() {
 
       {/* Show Upgrade Modal */}
       {showUpgradeModal && <UpgradeModal />}
-
-      {/* Ads Remaining Counter */}
-      {isSignedIn && (
-        <div className="fixed top-4 right-4 bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-gray-700">
-          <p className="text-sm text-gray-300">
-            <span className="text-[#D4AF37] font-medium">{adsRemaining}</span> ads remaining this month
-          </p>
-        </div>
-      )}
     </div>
   )
 } 
