@@ -1,5 +1,4 @@
-import { getAuth } from '@clerk/nextjs/server';
-import { clerkClient } from "@clerk/nextjs";
+import { getAuth, currentUser } from "@clerk/nextjs/server";
 import prisma from '../../lib/prisma';
 import OpenAI from 'openai';
 
@@ -28,10 +27,13 @@ export default async function handler(req, res) {
 
     if (!user) {
       try {
-        // Fetch user email from Clerk
-        const clerkUser = await clerkClient.users.getUser(userId);
-        const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+        // Get the current user from Clerk
+        const clerkUser = await currentUser();
+        if (!clerkUser) {
+          return res.status(401).json({ error: "User not found in Clerk." });
+        }
 
+        const email = clerkUser.emailAddresses[0]?.emailAddress;
         if (!email) {
           return res.status(400).json({ error: "User email not found in Clerk." });
         }
