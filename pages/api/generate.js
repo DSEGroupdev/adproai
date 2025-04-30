@@ -1,6 +1,11 @@
 import prisma from "../../lib/prisma";
 import { checkAdGenerationLimit, incrementAdCount } from "../../lib/adLimit";
 import { getAuth } from "@clerk/nextjs/server";
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -51,30 +56,52 @@ export default async function handler(req, res) {
 
     await checkAdGenerationLimit(userId);
 
-    // Compose the prompt for OpenAI
-    const prompt = `Product: ${product}\nAudience: ${audience || ''}\nUSP: ${usp || ''}\nTone: ${tone || ''}\nPlatform: ${platform || ''}`;
+    let platformInstructions = "";
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert copywriter specializing in creating high-converting ad copy. Generate ad copy in JSON format with the following structure: { "headline": "string", "body": "string", "callToAction": "string" }'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 150
-      })
+    switch (platform.toLowerCase()) {
+      case "facebook":
+        platformInstructions = "Format this ad for Facebook. Output should include:\n- Headline (max 40 characters)\n- Body (max 125 characters)\n- Call to Action (1 sentence, max 80 characters)\nStrictly follow these character limits. Do not exceed.";
+        break;
+      case "instagram":
+        platformInstructions = "Format this ad for Instagram. Combine the message into one emotional, short caption under 100 characters total. Use emojis if appropriate. Do not exceed 100 characters.";
+        break;
+      case "google":
+        platformInstructions = "Format for Google Search Ads. Output should include:\n- 3 Headlines (max 30 characters each)\n- 2 Descriptions (max 90 characters each)\nReturn in a clear labeled format. Strictly follow these limits.";
+        break;
+      case "tiktok":
+        platformInstructions = "Format this ad for TikTok. Use a casual, fun tone. Output should be a single hook-based sentence under 80 characters. Include a trending-style tone. Do not exceed limit.";
+        break;
+      case "linkedin":
+        platformInstructions = "Format for LinkedIn. Output should include:\n- Headline (max 50 characters)\n- Body (max 150 characters)\n- Call to Action (formal, max 80 characters)\nUse a professional tone and strictly respect these character limits.";
+        break;
+      default:
+        platformInstructions = "Output should include Headline, Body, and Call to Action. Keep each section concise. Do not exceed reasonable ad character limits.";
+    }
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a professional ad copywriter creating high-converting ad copy for different platforms."
+        },
+        {
+          role: "user",
+          content: `Product: ${product}
+Audience: ${audience}
+Unique Selling Point: ${usp}
+Tone: ${tone}
+Platform: ${platform}
+
+${platformInstructions}
+
+Please output:
+Headline:
+Body:
+Call to Action:`,
+        },
+      ],
+      temperature: 0.7,
     });
 
     if (!response.ok) {
