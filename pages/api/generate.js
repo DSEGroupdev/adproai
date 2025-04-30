@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { userId, product, audience, usp, tone, platform } = req.body;
+  const { userId, product, audience, usp, tone, platform, targeting } = req.body;
 
   if (!userId || !product) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -56,6 +56,10 @@ export default async function handler(req, res) {
 
     await checkAdGenerationLimit(userId);
 
+    // Plan-based feature control
+    const allowTextTargeting = ["STARTER", "PRO", "AGENCY"].includes(user.plan);
+    const allowTargetingConfig = ["PRO", "AGENCY"].includes(user.plan);
+
     let platformInstructions = "";
 
     switch (platform.toLowerCase()) {
@@ -78,27 +82,46 @@ export default async function handler(req, res) {
         platformInstructions = "Output should include Headline, Body, and Call to Action. Keep each section concise. Do not exceed reasonable ad character limits.";
     }
 
+    // Build targeting content
+    const targetingInput = allowTextTargeting && targeting
+      ? `Targeting Description: ${targeting}\n`
+      : "";
+
+    const targetingConfigPrompt = allowTargetingConfig
+      ? `Also include a section labeled "Suggested Targeting for ${platform}" with:
+- Age range
+- Gender
+- Interests
+- Location
+Format your response as a bullet list. Tailor the structure for ${platform} based on how targeting is configured on that platform.`
+      : "";
+
+    const promptContent = `Product: ${product}
+Audience: ${audience}
+Unique Selling Point: ${usp}
+Tone: ${tone}
+Platform: ${platform}
+${targetingInput}
+${platformInstructions}
+${targetingConfigPrompt}
+
+Please output:
+Headline:
+Body:
+Call to Action:
+${allowTargetingConfig ? 'Suggested Targeting for ' + platform + ':' : ''}
+`;
+
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: "You are a professional ad copywriter creating high-converting ad copy for different platforms."
+          content: "You are a professional ad copywriter creating high-converting ads tailored to platform rules and audience targeting."
         },
         {
           role: "user",
-          content: `Product: ${product}
-Audience: ${audience}
-Unique Selling Point: ${usp}
-Tone: ${tone}
-Platform: ${platform}
-
-${platformInstructions}
-
-Please output:
-Headline:
-Body:
-Call to Action:`,
+          content: promptContent,
         },
       ],
       temperature: 0.7,
