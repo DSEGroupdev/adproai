@@ -72,16 +72,18 @@ export default function Home() {
         }),
       });
 
+      const data = await res.json();
+      
       if (!res.ok) {
-        const errorData = await res.json();
-        if (errorData.error?.includes('monthly ad generation limit')) {
+        // Check for the limit error message
+        if (data.error && data.error.includes('monthly ad generation limit')) {
           setShowUpgradeModal(true);
+          setIsLoading(false);
           return;
         }
-        throw new Error(errorData.error || "An error occurred while generating ad copy.");
+        throw new Error(data.error || "An error occurred while generating ad copy.");
       }
 
-      const data = await res.json();
       const formattedResult = {
         headline: data.headline,
         body: data.body,
@@ -91,7 +93,11 @@ export default function Home() {
       setResult(formattedResult);
       setShowModal(true);
     } catch (error) {
-      setError(error.message || "Failed to generate ad copy. Please try again.");
+      if (error.message && error.message.includes('monthly ad generation limit')) {
+        setShowUpgradeModal(true);
+      } else {
+        setError(error.message || "Failed to generate ad copy. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
