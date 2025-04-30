@@ -1,13 +1,13 @@
 import { auth } from '@clerk/nextjs';
 import prisma from '../../lib/prisma';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const FREE_TIER_LIMIT = 3;
+const PREMIUM_TIER_LIMIT = 100;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -37,10 +37,12 @@ export default async function handler(req, res) {
 
     // Check ad generation limits
     const isFreeTier = user.plan === 'FREE';
-    if (isFreeTier && user.adsGenerated >= FREE_TIER_LIMIT) {
+    const limit = isFreeTier ? FREE_TIER_LIMIT : PREMIUM_TIER_LIMIT;
+    
+    if (user.adsGenerated >= limit) {
       return res.status(403).json({
         error: 'ad_limit_reached',
-        message: 'You have reached your monthly ad generation limit',
+        message: `You have reached your monthly ad generation limit (${limit} ads)`,
         currentPlan: user.plan
       });
     }
@@ -63,7 +65,7 @@ Please provide:
 
 Format the response as JSON with these keys: headline, body, callToAction, targeting`;
 
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
@@ -79,7 +81,7 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
     });
 
     // Parse the response
-    const responseText = completion.data.choices[0].message.content;
+    const responseText = completion.choices[0].message.content;
     const adCopy = JSON.parse(responseText);
 
     // Increment ads generated count
@@ -89,7 +91,7 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
     });
 
     // Get updated ads remaining count
-    const adsRemaining = isFreeTier ? FREE_TIER_LIMIT - (user.adsGenerated + 1) : null;
+    const adsRemaining = limit - (user.adsGenerated + 1);
 
     // Save the generated ad copy
     await prisma.adCopy.create({
