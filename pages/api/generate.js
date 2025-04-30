@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs';
+import { getAuth } from '@clerk/nextjs/server';
 import prisma from '../../lib/prisma';
 import OpenAI from 'openai';
 
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { userId } = auth();
+    const { userId } = getAuth(req);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
