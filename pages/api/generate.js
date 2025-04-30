@@ -1,4 +1,4 @@
-import { getAuth, currentUser } from "@clerk/nextjs/server";
+import { getAuth } from "@clerk/nextjs/server";
 import prisma from '../../lib/prisma';
 import OpenAI from 'openai';
 
@@ -26,31 +26,15 @@ export default async function handler(req, res) {
     });
 
     if (!user) {
-      try {
-        // Get the current user from Clerk
-        const clerkUser = await currentUser();
-        if (!clerkUser) {
-          return res.status(401).json({ error: "User not found in Clerk." });
-        }
-
-        const email = clerkUser.emailAddresses[0]?.emailAddress;
-        if (!email) {
-          return res.status(400).json({ error: "User email not found in Clerk." });
-        }
-
-        user = await prisma.user.create({
-          data: {
-            id: userId,
-            clerkId: userId,
-            email,
-            plan: "FREE",
-            adsGenerated: 0
-          },
-        });
-      } catch (error) {
-        console.error('Error fetching Clerk user:', error);
-        return res.status(500).json({ error: "Failed to fetch user data from Clerk." });
-      }
+      user = await prisma.user.create({
+        data: {
+          id: userId,
+          clerkId: userId,
+          email: `${userId}@placeholder.email`,
+          plan: "FREE",
+          adsGenerated: 0
+        },
+      });
     }
 
     // Check ad generation limits
