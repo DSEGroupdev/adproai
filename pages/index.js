@@ -156,130 +156,117 @@ export default function Home() {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
-        <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6 relative">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold text-white">Generated Ad Copy</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <FiX size={24} />
+            </button>
+          </div>
 
-          <h2 className="text-2xl font-bold mb-4">Generated Ad Copy</h2>
-
-          <div className="space-y-4">
-            <div className="relative group">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">Headline</h3>
-                <p className="text-gray-700">{result.headline}</p>
-              </div>
-              <button
-                onClick={() => handleCopy('headline')}
-                className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Copy headline"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          {/* Headline Section */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Headline</h4>
+              <div className="relative group">
+                <button
+                  onClick={() => handleCopy('headline')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="relative group">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">Body</h3>
-                <p className="text-gray-700">{result.body}</p>
+                  {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
               </div>
-              <button
-                onClick={() => handleCopy('body')}
-                className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Copy body"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                  />
-                </svg>
-              </button>
             </div>
+            <p className="text-white">{result.headline}</p>
+          </div>
 
-            <div className="relative group">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">Call to Action</h3>
-                <p className="text-gray-700">{result.callToAction}</p>
+          {/* Body Section */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Body</h4>
+              <div className="relative group">
+                <button
+                  onClick={() => handleCopy('body')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
               </div>
-              <button
-                onClick={() => handleCopy('callToAction')}
-                className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Copy call to action"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                  />
-                </svg>
-              </button>
             </div>
+            <p className="text-white whitespace-pre-line">{result.body}</p>
+          </div>
 
-            {result.targeting && (
-              <div
-                className={`relative p-4 border rounded-md mt-6 ${
-                  isFullTargetingAvailable ? "bg-white" : "bg-gray-100 blur-sm cursor-pointer hover:blur-none transition"
-                }`}
-                onClick={() => {
-                  if (!isFullTargetingAvailable) {
-                    window.location.href = "/pricing";
-                  }
-                }}
-                title={!isFullTargetingAvailable ? "Unlock premium ad targeting features" : ""}
-              >
-                <h3 className="text-lg font-semibold mb-2">Suggested Targeting for {platform}</h3>
-                <pre className="whitespace-pre-wrap text-sm">{result.targeting}</pre>
+          {/* Call to Action Section */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Call to Action</h4>
+              <div className="relative group">
+                <button
+                  onClick={() => handleCopy('callToAction')}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
+              </div>
+            </div>
+            <p className="text-white">{result.callToAction}</p>
+          </div>
 
+          {/* Targeting Section */}
+          {result.targeting && (
+            <div
+              className={`relative p-4 rounded-lg ${
+                isFullTargetingAvailable 
+                  ? "bg-gray-800/50" 
+                  : "bg-gray-800/30 blur-sm hover:blur-none transition-all cursor-pointer"
+              }`}
+              onClick={() => {
+                if (!isFullTargetingAvailable) {
+                  window.location.href = "/pricing";
+                }
+              }}
+              title={!isFullTargetingAvailable ? "Upgrade to view targeting suggestions" : ""}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-[#D4AF37] font-medium">Suggested Targeting for {platform}</h4>
                 {!isFullTargetingAvailable && (
-                  <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded shadow">
-                    Unlock to view
-                  </div>
+                  <span className="bg-[#D4AF37] text-black text-xs px-2 py-1 rounded">
+                    PRO Feature
+                  </span>
                 )}
               </div>
-            )}
+              <pre className="text-white text-sm whitespace-pre-wrap">{result.targeting}</pre>
+
+              {!isFullTargetingAvailable && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/80 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
+                    Upgrade to PRO to unlock targeting suggestions
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              onClick={onClose}
+              className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
