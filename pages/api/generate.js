@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  timeout: 10000, // 10 second timeout
 });
 
 const FREE_TIER_LIMIT = 3;
@@ -71,35 +72,21 @@ Please provide:
 
 Format the response as JSON with these keys: headline, body, callToAction, targeting`;
 
-    // Set up timeout handling
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10 sec timeout
-
-    let completion;
-    try {
-      completion = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert copywriter specializing in social media ads. Provide responses in JSON format."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 300,
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-    } catch (error) {
-      if (error.name === "AbortError") {
-        return res.status(504).json({ error: "Generation timed out. Try again." });
-      }
-      throw error;
-    }
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert copywriter specializing in social media ads. Provide responses in JSON format."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 300,
+    });
 
     // Parse the response
     const responseText = completion.choices[0].message.content;
@@ -125,6 +112,9 @@ Format the response as JSON with these keys: headline, body, callToAction, targe
 
   } catch (error) {
     console.error('Error generating ad copy:', error);
+    if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED') {
+      return res.status(504).json({ error: "Generation timed out. Try again." });
+    }
     return res.status(500).json({ error: "Failed to generate ad copy. Please try again." });
   }
 } 
