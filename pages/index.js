@@ -60,8 +60,7 @@ export default function Home() {
           audience: formData.targetAudience,
           usp: formData.productDescription,
           tone: formData.tone,
-          platform: formData.platform,
-          targeting: formData.targeting
+          platform: formData.platform
         }),
       });
 
@@ -76,11 +75,17 @@ export default function Home() {
         }
       }
 
+      // Ensure the data has the expected structure
+      if (!data.headline || !data.body || !data.callToAction) {
+        throw new Error("Invalid response format from server");
+      }
+
+      // Set the result with proper structure
       setAdResult({
         headline: data.headline,
         body: data.body,
         callToAction: data.callToAction,
-        targeting: data.targeting
+        targeting: data.targeting || { demographics: [], geographics: [] }
       });
       setRemaining(data.adsRemaining);
 
