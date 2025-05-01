@@ -152,6 +152,11 @@ export default function Home() {
 
     if (!isOpen) return null;
 
+    // Safely extract targeting data with defaults
+    const targeting = result?.targeting || {};
+    const demographics = targeting?.demographics || [];
+    const geographics = targeting?.geographics || [];
+
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6 relative">
@@ -181,7 +186,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white">{result.headline}</p>
+            <p className="text-white">{result?.headline}</p>
           </div>
 
           {/* Body Section */}
@@ -200,7 +205,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white whitespace-pre-line">{result.body}</p>
+            <p className="text-white">{result?.body}</p>
           </div>
 
           {/* Call to Action Section */}
@@ -219,52 +224,35 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white">{result.callToAction}</p>
+            <p className="text-white">{result?.callToAction}</p>
           </div>
 
           {/* Targeting Section */}
-          {result.targeting && (
-            <div
-              className={`relative p-4 rounded-lg ${
-                isFullTargetingAvailable 
-                  ? "bg-gray-800/50" 
-                  : "bg-gray-800/30 blur-sm hover:blur-none transition-all cursor-pointer"
-              }`}
-              onClick={() => {
-                if (!isFullTargetingAvailable) {
-                  window.location.href = "/pricing";
-                }
-              }}
-              title={!isFullTargetingAvailable ? "Upgrade to view targeting suggestions" : ""}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h4 className="text-[#D4AF37] font-medium">Suggested Targeting for {platform}</h4>
-                {!isFullTargetingAvailable && (
-                  <span className="bg-[#D4AF37] text-black text-xs px-2 py-1 rounded">
-                    PRO Feature
-                  </span>
-                )}
-              </div>
-              <pre className="text-white text-sm whitespace-pre-wrap">{result.targeting}</pre>
-
-              {!isFullTargetingAvailable && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/80 text-white px-4 py-2 rounded-lg backdrop-blur-sm">
-                    Upgrade to PRO to unlock targeting suggestions
-                  </div>
+          {isFullTargetingAvailable && (demographics.length > 0 || geographics.length > 0) && (
+            <div className="bg-gray-800/50 rounded-lg p-4">
+              <h4 className="text-[#D4AF37] font-medium mb-2">Targeting Suggestions</h4>
+              {demographics.length > 0 && (
+                <div className="mb-4">
+                  <h5 className="text-white font-medium mb-1">Demographics</h5>
+                  <ul className="list-disc list-inside text-gray-300">
+                    {demographics.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {geographics.length > 0 && (
+                <div>
+                  <h5 className="text-white font-medium mb-1">Geographics</h5>
+                  <ul className="list-disc list-inside text-gray-300">
+                    {geographics.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
           )}
-
-          <div className="flex justify-end">
-            <button
-              onClick={onClose}
-              className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
-            >
-              Close
-            </button>
-          </div>
         </div>
       </div>
     );
