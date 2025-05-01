@@ -640,7 +640,47 @@ export default function Home() {
             {adResult && (
               <div className="mt-6 bg-black text-white p-4 rounded-lg border border-gold shadow">
                 <h3 className="text-lg font-semibold text-gold mb-2">Generated Ad</h3>
-                <pre className="whitespace-pre-wrap text-sm">{adResult}</pre>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-gold font-medium mb-1">Headline</h4>
+                    <p className="text-white">{adResult.headline}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-gold font-medium mb-1">Body</h4>
+                    <p className="text-white whitespace-pre-line">{adResult.body}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-gold font-medium mb-1">Call to Action</h4>
+                    <p className="text-white">{adResult.callToAction}</p>
+                  </div>
+                  {adResult.targeting && (
+                    <div>
+                      <h4 className="text-gold font-medium mb-1">Targeting Suggestions</h4>
+                      <div className="space-y-2">
+                        {adResult.targeting.demographics && (
+                          <div>
+                            <h5 className="text-white font-medium">Demographics</h5>
+                            <ul className="list-disc list-inside text-gray-300">
+                              {adResult.targeting.demographics.map((item, index) => (
+                                <li key={index}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {adResult.targeting.geographics && (
+                          <div>
+                            <h5 className="text-white font-medium">Geographics</h5>
+                            <ul className="list-disc list-inside text-gray-300">
+                              {adResult.targeting.geographics.map((item, index) => (
+                                <li key={index}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
