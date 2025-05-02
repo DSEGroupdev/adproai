@@ -50,29 +50,65 @@ export default async function handler(req, res) {
     }
 
     // Extract request data
-    const { product, audience, usp, tone, platform, location, demographic } = req.body;
+    const { product, audience, usp, tone, platform, location, demographic, radius, keywords } = req.body;
 
     if (!product || !audience || !usp || !tone || !platform) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // Generate ad copy using OpenAI
-    const prompt = `Create a compelling ad for ${platform} with the following details:
-Product: ${product}
-Target Audience: ${audience}
-Unique Selling Point: ${usp}
-Tone: ${tone}
-${location ? `Target Location: ${location}` : ''}
-${demographic ? `Target Demographic: ${demographic}` : ''}
+    const prompt = `You are a professional performance ad strategist.
 
-Generate high-converting ad copy tailored to the selected platform, tone, audience, and unique selling point. If provided, factor in the target location and demographic details to make the copy more relevant.
+Create a high-converting ad campaign for the following product or service, customized to the selected ad platform.
 
-Structure your response in JSON format:
+Inputs:
+- Product: ${product}
+- Audience: ${audience}
+- Unique Selling Point: ${usp}
+- Tone: ${tone}
+- Platform: ${platform}
+- Location (if provided): ${location}
+- Demographic Details (if provided): ${demographic}
+- Keyword Focus (if provided): ${keywords}
+
+Respond in strict JSON format with the following fields:
+- headline
+- body
+- call_to_action
+- targeting
+- recommended_budget
+
+Platform-specific instructions:
+
+▶️ Facebook/Instagram:  
+- Headline max 40 characters  
+- Body max 125 characters  
+- Interest-based targeting  
+- Call to action in casual or emotional tone  
+- Include suggested age, gender, location, interests  
+- Format body for mobile
+
+🔍 Google Ads:  
+- 3 headlines (max 30 characters each)  
+- 2 descriptions (max 90 characters each)  
+- Focus on search intent and keyword usage  
+- Include radius-based location targeting  
+- Include suggested daily budget
+
+💼 LinkedIn:  
+- Professional tone  
+- Headline under 50 characters  
+- Target by job titles, industries, and company size  
+- Emphasize B2B value  
+- Include suggested daily budget for B2B targeting
+
+Respond only in strict JSON, like:
 {
   "headline": "...",
   "body": "...",
   "call_to_action": "...",
-  "targeting": "Suggested Targeting: Age 25–45, Interests: AI Tools, Location: Dubai"
+  "targeting": "Suggested Targeting:\\n- Age: 30–50\\n- Gender: All\\n- Interests: AI tools, SaaS, automation\\n- Location: Within 25 miles of San Diego",
+  "recommended_budget": "$20–30/day for the first 7 days"
 }`;
 
     const completion = await openai.chat.completions.create({
