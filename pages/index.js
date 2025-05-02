@@ -43,6 +43,7 @@ export default function Home() {
   const [errorPlan, setErrorPlan] = useState(null);
   const [currentPlan, setCurrentPlan] = useState(null);
   const [showLastAdWarning, setShowLastAdWarning] = useState(false);
+  const [showAdLimitModal, setShowAdLimitModal] = useState(false);
 
   const handleGenerateAd = async (e) => {
     if (e) {
@@ -52,6 +53,7 @@ export default function Home() {
       setIsLoading(true);
       setError(null);
       setAdResult(null);
+      setShowAdLimitModal(false);
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -69,8 +71,12 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Server error: ${res.status} - ${errorText}`);
+        const errorData = await res.json();
+        if (res.status === 403 && errorData.error === 'ad_limit_reached') {
+          setShowAdLimitModal(true);
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to generate ad copy');
       }
 
       const data = await res.json();
@@ -312,6 +318,40 @@ export default function Home() {
             className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
           >
             Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const AdLimitModal = () => (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      onClick={() => setShowAdLimitModal(false)}
+    >
+      <div 
+        className="bg-[#181c23] rounded-xl p-8 max-w-md w-[90%] mx-auto relative"
+        onClick={e => e.stopPropagation()}
+      >
+        <h3 className="text-2xl font-bold text-white mb-4">You've Reached Your Limit</h3>
+        <p className="text-gray-300 mb-6">
+          You've generated 3 ads this month on the free plan. Upgrade to Premium to unlock 100 ads/month, advanced targeting, and professional copy tailored for every platform.
+        </p>
+        <div className="bg-gray-800/50 p-4 rounded-lg mb-6">
+          <p className="text-2xl font-bold text-[#D4AF37]">$12.99<span className="text-base text-gray-400">/month</span></p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={() => setShowAdLimitModal(false)}
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition"
+          >
+            Not now
+          </button>
+          <button
+            onClick={() => handleCheckout('premium')}
+            className="px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
+          >
+            Upgrade Now
           </button>
         </div>
       </div>
@@ -849,6 +889,9 @@ export default function Home() {
           platform={formData.platform}
         />
       )}
+
+      {/* Show Ad Limit Modal */}
+      {showAdLimitModal && <AdLimitModal />}
 
       {/* Show Last Ad Warning Modal */}
       {showLastAdWarning && <LastAdWarningModal />}
