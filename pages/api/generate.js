@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     }
 
     // Extract request data
-    const { product, audience, usp, tone, platform } = req.body;
+    const { product, audience, usp, tone, platform, location, demographic } = req.body;
 
     if (!product || !audience || !usp || !tone || !platform) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -62,14 +62,18 @@ Product: ${product}
 Target Audience: ${audience}
 Unique Selling Point: ${usp}
 Tone: ${tone}
+${location ? `Target Location: ${location}` : ''}
+${demographic ? `Target Demographic: ${demographic}` : ''}
 
-Please provide:
-1. Attention-grabbing headline
-2. Engaging body copy
-3. Clear call-to-action
-4. Targeting suggestions for ${platform}
+Generate high-converting ad copy tailored to the selected platform, tone, audience, and unique selling point. If provided, factor in the target location and demographic details to make the copy more relevant.
 
-Format the response as JSON with these keys: headline, body, callToAction, targeting`;
+Structure your response in JSON format:
+{
+  "headline": "...",
+  "body": "...",
+  "call_to_action": "...",
+  "targeting": "Suggested Targeting: Age 25–45, Interests: AI Tools, Location: Dubai"
+}`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",

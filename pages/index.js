@@ -23,7 +23,9 @@ export default function Home() {
     targetAudience: '',
     tone: '',
     platform: '',
-    maxLength: 100
+    maxLength: 100,
+    location: '',
+    demographic: ''
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -60,7 +62,9 @@ export default function Home() {
           audience: formData.targetAudience,
           usp: formData.productDescription,
           tone: formData.tone,
-          platform: formData.platform
+          platform: formData.platform,
+          location: formData.location,
+          demographic: formData.demographic
         }),
       });
 
@@ -615,6 +619,45 @@ export default function Home() {
                     </div>
                     <div className="absolute right-3 top-3 pointer-events-none">
                       <FiChevronRight className="text-gray-400 transform rotate-90" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Target Location</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      placeholder="e.g., Dubai, Europe, USA"
+                    />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Enter a specific country, region, or city you'd like to target (e.g., Dubai, Europe, USA).
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Target Demographic</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={formData.demographic}
+                      onChange={(e) => setFormData({ ...formData, demographic: e.target.value })}
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      placeholder="e.g., women 25-45, tech founders"
+                    />
+                    <div className="absolute right-2 top-2 group">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Describe your ideal audience: age, gender, interests, or occupation (e.g., women 25–45, tech founders).
+                      </div>
                     </div>
                   </div>
                 </div>
