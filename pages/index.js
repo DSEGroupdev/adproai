@@ -68,16 +68,12 @@ export default function Home() {
         }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        if (data.error === "ad_limit_reached") {
-          setShowUpgradeModal(true);
-          return;
-        } else {
-          throw new Error(data.error || "Failed to generate ad copy.");
-        }
+        const errorText = await res.text();
+        throw new Error(`Server error: ${res.status} - ${errorText}`);
       }
+
+      const data = await res.json();
 
       // Ensure the data has the expected structure
       if (!data.headline || !data.body || !data.callToAction) {

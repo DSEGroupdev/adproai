@@ -115,6 +115,6 @@ Structure your response in JSON format:
 
   } catch (error) {
     console.error('Error generating ad copy:', error);
-    return res.status(500).json({ error: "Failed to generate ad copy. Please try again." });
+    return res.status(500).json({ error: 'Failed to generate ad copy' });
   }
 } 
