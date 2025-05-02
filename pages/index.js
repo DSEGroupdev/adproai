@@ -333,6 +333,12 @@ export default function Home() {
         className="bg-[#181c23] rounded-xl p-8 max-w-md w-[90%] mx-auto relative"
         onClick={e => e.stopPropagation()}
       >
+        <button
+          onClick={() => setShowAdLimitModal(false)}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white opacity-80 hover:opacity-100 transition-opacity"
+        >
+          <FiX size={24} />
+        </button>
         <h3 className="text-2xl font-bold text-white mb-4">You've Reached Your Limit</h3>
         <p className="text-gray-300 mb-6">
           You've generated 3 ads this month on the free plan. Upgrade to Premium to unlock 100 ads/month, advanced targeting, and professional copy tailored for every platform.
@@ -340,20 +346,12 @@ export default function Home() {
         <div className="bg-gray-800/50 p-4 rounded-lg mb-6">
           <p className="text-2xl font-bold text-[#D4AF37]">$12.99<span className="text-base text-gray-400">/month</span></p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={() => setShowAdLimitModal(false)}
-            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition"
-          >
-            Not now
-          </button>
-          <button
-            onClick={() => handleCheckout('premium')}
-            className="px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
-          >
-            Upgrade Now
-          </button>
-        </div>
+        <button
+          onClick={() => handleCheckout('premium')}
+          className="w-full px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
+        >
+          Upgrade Now
+        </button>
       </div>
     </div>
   );
