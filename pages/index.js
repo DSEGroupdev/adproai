@@ -667,17 +667,22 @@ export default function Home() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
-                  Target Location
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="location"
-                  type="text"
-                  placeholder="e.g., San Diego, CA"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                />
+                <label className="block text-sm font-medium mb-2">Target Location</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    placeholder="e.g., San Diego, CA"
+                  />
+                  <div className="absolute right-2 top-2 group">
+                    <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                    <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                      Enter a city, region, or country to target your ad geographically (optional)
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <button
