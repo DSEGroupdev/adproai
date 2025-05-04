@@ -57,9 +57,12 @@ export default async function handler(req, res) {
     }
 
     // Generate ad copy using OpenAI
-    const prompt = `You are a professional performance ad strategist.
-
-Create a high-converting ad campaign for the following product or service, customized to the selected ad platform.
+    const prompt = `You are a performance ad strategist. Based on the following inputs, generate:
+- A high-converting ad copy (headline, body, CTA) optimized for the selected platform.
+- Suggested targeting radius and demographics.
+- Recommended keywords to include in targeting.
+- A monthly ad budget estimate.
+The output should be customized for the selected ad platform (Facebook, Google Ads, LinkedIn, or Instagram), respecting platform-specific best practices and character limits.
 
 Inputs:
 - Product: ${product}
@@ -68,47 +71,18 @@ Inputs:
 - Tone: ${tone}
 - Platform: ${platform}
 - Location (if provided): ${location}
-- Demographic Details (if provided): ${demographic}
-- Keyword Focus (if provided): ${keywords}
-
-Respond in strict JSON format with the following fields:
-- headline
-- body
-- call_to_action
-- targeting
-- recommended_budget
-
-Platform-specific instructions:
-
-▶️ Facebook/Instagram:  
-- Headline max 40 characters  
-- Body max 125 characters  
-- Interest-based targeting  
-- Call to action in casual or emotional tone  
-- Include suggested age, gender, location, interests  
-- Format body for mobile
-
-🔍 Google Ads:  
-- 3 headlines (max 30 characters each)  
-- 2 descriptions (max 90 characters each)  
-- Focus on search intent and keyword usage  
-- Include radius-based location targeting  
-- Include suggested daily budget
-
-💼 LinkedIn:  
-- Professional tone  
-- Headline under 50 characters  
-- Target by job titles, industries, and company size  
-- Emphasize B2B value  
-- Include suggested daily budget for B2B targeting
 
 Respond only in strict JSON, like:
 {
   "headline": "...",
   "body": "...",
-  "call_to_action": "...",
-  "targeting": "Suggested Targeting:\\n- Age: 30–50\\n- Gender: All\\n- Interests: AI tools, SaaS, automation\\n- Location: Within 25 miles of San Diego",
-  "recommended_budget": "$20–30/day for the first 7 days"
+  "callToAction": "...",
+  "suggestedTargeting": {
+    "radius": "15 miles around San Diego",
+    "demographic": "Men 18–45, enduro riders",
+    "keywords": ["enduro training", "dirt bike school"]
+  },
+  "recommendedBudget": "$250–300/month"
 }`;
 
     const completion = await openai.chat.completions.create({
@@ -142,14 +116,13 @@ Respond only in strict JSON, like:
       return {
         headline: obj.headline || '',
         body: obj.body || '',
-        callToAction: obj.call_to_action || obj.callToAction || '',
-        targeting: (typeof obj.targeting === 'object' && obj.targeting !== null)
-          ? {
-              demographics: obj.targeting.demographics || [],
-              geographics: obj.targeting.geographics || []
-            }
-          : { demographics: [], geographics: [] },
-        recommendedBudget: obj.recommended_budget || obj.recommendedBudget || '',
+        callToAction: obj.callToAction || obj.call_to_action || '',
+        suggestedTargeting: obj.suggestedTargeting || {
+          radius: '',
+          demographic: '',
+          keywords: []
+        },
+        recommendedBudget: obj.recommendedBudget || obj.recommended_budget || '',
       };
     };
 
@@ -166,7 +139,7 @@ Respond only in strict JSON, like:
       headline: mappedAdCopy.headline,
       body: mappedAdCopy.body,
       callToAction: mappedAdCopy.callToAction,
-      targeting: mappedAdCopy.targeting,
+      suggestedTargeting: mappedAdCopy.suggestedTargeting,
       recommendedBudget: mappedAdCopy.recommendedBudget,
       adsRemaining: limit - (user.adsGenerated + 1)
     });
