@@ -532,37 +532,31 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">Why Choose Ad Pro AI</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <FiZap className="text-[#FFD700] text-4xl mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">Generate High-Converting Ad Copy</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">Create compelling ad copy that drives results using advanced AI technology.</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <FiZap className="text-[#FFD700] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">Generate High-Converting Ad Copy</h3>
+              <p className="text-gray-300 relative z-10">Create compelling ad copy that drives results using advanced AI technology.</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <FiHelpCircle className="text-[#FFD700] text-4xl mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">Target the Right Audience</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">Optimize your ads for specific demographics and interests.</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <FiHelpCircle className="text-[#FFD700] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">Target the Right Audience</h3>
+              <p className="text-gray-300 relative z-10">Optimize your ads for specific demographics and interests.</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <FiCopy className="text-[#FFD700] text-4xl mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">Boost ROI Instantly</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">See immediate improvements in your ad performance and conversion rates.</p>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <FiCopy className="text-[#FFD700] text-4xl mb-4 relative z-10" />
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">Boost ROI Instantly</h3>
+              <p className="text-gray-300 relative z-10">See immediate improvements in your ad performance and conversion rates.</p>
             </motion.div>
           </div>
         </div>
@@ -574,43 +568,37 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">1</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">Fill Out Form</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">Enter your product details and preferences</p>
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">Fill Out Form</h3>
+              <p className="text-gray-300 relative z-10">Enter your product details and preferences</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">2</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">AI Writes Copy</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">Our AI generates optimized ad copy</p>
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">AI Writes Copy</h3>
+              <p className="text-gray-300 relative z-10">Our AI generates optimized ad copy</p>
             </motion.div>
             <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300"
+              whileHover={{ y: -5, filter: 'brightness(1.08) contrast(1.08)' }}
+              className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute inset-0 border border-[#FFD700]/20 group-hover:border-[#FFD700]/40 transition-all duration-300" />
-              <div className="absolute inset-0 shadow-[0_0_30px_rgba(255,215,0,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
+              <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">3</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 relative z-10 group-hover:text-[#FFD700] transition-colors duration-300">Copy & Paste</h3>
-              <p className="text-gray-400 relative z-10 group-hover:text-gray-300 transition-colors duration-300">Use the generated copy in your ads</p>
+              <h3 className="text-xl font-semibold mb-2 relative z-10 text-[#FFD700]">Copy & Paste</h3>
+              <p className="text-gray-300 relative z-10">Use the generated copy in your ads</p>
             </motion.div>
           </div>
         </div>
