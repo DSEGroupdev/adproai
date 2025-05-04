@@ -56,6 +56,7 @@ export default function Home() {
       setError(null);
       setAdResult(null);
       setShowAdLimitModal(false);
+      setShowUpgradeModal(false);
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -75,6 +76,11 @@ export default function Home() {
       });
 
       const data = await res.json();
+
+      if (res.status === 403 && data.error === 'ad_limit_reached') {
+        setShowUpgradeModal(true);
+        return;
+      }
 
       if (!res.ok || !data.valid || !data.headline || !data.body || !data.callToAction) {
         console.error("Ad generation failed or invalid response:", data);
@@ -181,7 +187,7 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-white">Generated Campaign Plan</h3>
             <button
-              onClick={onClose}
+              onClick={() => onClose()}
               className="text-gray-400 hover:text-white"
             >
               <FiX size={24} />
@@ -922,7 +928,7 @@ export default function Home() {
       {adResult && (
         <ResultModal
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => setAdResult(null)}
           result={adResult}
           platform={formData.platform}
         />
