@@ -137,15 +137,37 @@ Respond only in strict JSON, like:
       return res.status(500).json({ error: 'Failed to parse ad copy response' });
     }
 
+    // Map snake_case to camelCase for frontend compatibility
+    const mapKeys = (obj) => {
+      return {
+        headline: obj.headline || '',
+        body: obj.body || '',
+        callToAction: obj.call_to_action || obj.callToAction || '',
+        targeting: (typeof obj.targeting === 'object' && obj.targeting !== null)
+          ? {
+              demographics: obj.targeting.demographics || [],
+              geographics: obj.targeting.geographics || []
+            }
+          : { demographics: [], geographics: [] },
+        recommendedBudget: obj.recommended_budget || obj.recommendedBudget || '',
+      };
+    };
+
+    const mappedAdCopy = mapKeys(adCopy);
+
     // Increment ads generated count
     await prisma.user.update({
       where: { id: userId },
       data: { adsGenerated: { increment: 1 } }
     });
 
-    // Return the generated ad copy
+    // Return the generated ad copy in the expected format
     return res.status(200).json({
-      ...adCopy,
+      headline: mappedAdCopy.headline,
+      body: mappedAdCopy.body,
+      callToAction: mappedAdCopy.callToAction,
+      targeting: mappedAdCopy.targeting,
+      recommendedBudget: mappedAdCopy.recommendedBudget,
       adsRemaining: limit - (user.adsGenerated + 1)
     });
 
