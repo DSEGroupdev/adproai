@@ -162,21 +162,26 @@ export default function Home() {
   };
 
   const ResultModal = ({ isOpen, onClose, result, platform }) => {
-    const { user } = useUser();
-    const isFullTargetingAvailable = ["PRO", "AGENCY"].includes(user?.plan || "FREE");
-
     if (!isOpen) return null;
 
-    // Safely extract targeting data with defaults
+    // Helper for copy buttons
+    const getCopyHandler = (field, value) => async () => {
+      try {
+        await navigator.clipboard.writeText(value || '');
+        setCopied(prev => ({ ...prev, [field]: true }));
+        setTimeout(() => setCopied(prev => ({ ...prev, [field]: false })), 2000);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+    };
+
     const targeting = result?.targeting || {};
-    const demographics = targeting?.demographics || [];
-    const geographics = targeting?.geographics || [];
 
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div className="bg-[#181c23] rounded-xl p-6 max-w-2xl w-full space-y-6 relative">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold text-white">Generated Ad Copy</h3>
+            <h3 className="text-xl font-semibold text-white">Generated Campaign Plan</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white"
@@ -185,13 +190,13 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Headline Section */}
+          {/* Headline */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <h4 className="text-[#D4AF37] font-medium">Headline</h4>
               <div className="relative group">
                 <button
-                  onClick={() => handleCopy('headline')}
+                  onClick={getCopyHandler('headline', result?.headline)}
                   className="text-gray-400 hover:text-[#D4AF37] transition-colors"
                 >
                   {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
@@ -201,16 +206,16 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white">{result?.headline}</p>
+            <p className="text-white whitespace-pre-line">{result?.headline}</p>
           </div>
 
-          {/* Body Section */}
+          {/* Body */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <h4 className="text-[#D4AF37] font-medium">Body</h4>
               <div className="relative group">
                 <button
-                  onClick={() => handleCopy('body')}
+                  onClick={getCopyHandler('body', result?.body)}
                   className="text-gray-400 hover:text-[#D4AF37] transition-colors"
                 >
                   {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
@@ -220,16 +225,16 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white">{result?.body}</p>
+            <p className="text-white whitespace-pre-line">{result?.body}</p>
           </div>
 
-          {/* Call to Action Section */}
+          {/* Call to Action */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <h4 className="text-[#D4AF37] font-medium">Call to Action</h4>
               <div className="relative group">
                 <button
-                  onClick={() => handleCopy('callToAction')}
+                  onClick={getCopyHandler('callToAction', result?.callToAction)}
                   className="text-gray-400 hover:text-[#D4AF37] transition-colors"
                 >
                   {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
@@ -239,35 +244,84 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="text-white">{result?.callToAction}</p>
+            <p className="text-white whitespace-pre-line">{result?.callToAction}</p>
           </div>
 
-          {/* Targeting Section */}
-          {isFullTargetingAvailable && (demographics.length > 0 || geographics.length > 0) && (
-            <div className="bg-gray-800/50 rounded-lg p-4">
-              <h4 className="text-[#D4AF37] font-medium mb-2">Targeting Suggestions</h4>
-              {demographics.length > 0 && (
-                <div className="mb-4">
-                  <h5 className="text-white font-medium mb-1">Demographics</h5>
-                  <ul className="list-disc list-inside text-gray-300">
-                    {demographics.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
+          {/* Targeting Radius */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Targeting Radius</h4>
+              <div className="relative group">
+                <button
+                  onClick={getCopyHandler('radius', targeting?.radius)}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.radius ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
                 </div>
-              )}
-              {geographics.length > 0 && (
-                <div>
-                  <h5 className="text-white font-medium mb-1">Geographics</h5>
-                  <ul className="list-disc list-inside text-gray-300">
-                    {geographics.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              </div>
             </div>
-          )}
+            <p className="text-white whitespace-pre-line">{targeting?.radius}</p>
+          </div>
+
+          {/* Demographic Targeting */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Demographic Targeting</h4>
+              <div className="relative group">
+                <button
+                  onClick={getCopyHandler('demographic', targeting?.demographic)}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.demographic ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
+              </div>
+            </div>
+            <p className="text-white whitespace-pre-line">{targeting?.demographic}</p>
+          </div>
+
+          {/* Keyword Suggestions */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Keyword Suggestions</h4>
+              <div className="relative group">
+                <button
+                  onClick={getCopyHandler('keywords', targeting?.keywords)}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.keywords ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
+              </div>
+            </div>
+            <p className="text-white whitespace-pre-line">{targeting?.keywords}</p>
+          </div>
+
+          {/* Recommended Budget */}
+          <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[#D4AF37] font-medium">Recommended Budget</h4>
+              <div className="relative group">
+                <button
+                  onClick={getCopyHandler('recommendedBudget', result?.recommendedBudget)}
+                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                >
+                  {copied.recommendedBudget ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                </button>
+                <div className="absolute right-0 top-6 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Copy
+                </div>
+              </div>
+            </div>
+            <p className="text-white whitespace-pre-line">{result?.recommendedBudget}</p>
+          </div>
         </div>
       </div>
     );
