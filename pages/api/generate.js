@@ -131,20 +131,22 @@ Inputs:
 
     const mappedAdCopy = mapKeys(adCopy);
 
-    // Increment ads generated count
-    await prisma.user.update({
-      where: { id: userId },
-      data: { adsGenerated: { increment: 1 } }
-    });
+    // Validate required fields
+    const isValid = mappedAdCopy.headline && mappedAdCopy.body && mappedAdCopy.callToAction;
+    if (!isValid) {
+      console.error('Invalid GPT response: missing required fields', mappedAdCopy);
+      return res.status(500).json({ error: 'Invalid GPT response: missing required fields', valid: false });
+    }
 
-    // Return the generated ad copy in the expected format
+    // Return the generated ad copy in the expected format, with valid flag
     return res.status(200).json({
       headline: mappedAdCopy.headline,
       body: mappedAdCopy.body,
       callToAction: mappedAdCopy.callToAction,
       targeting: mappedAdCopy.targeting,
       recommendedBudget: mappedAdCopy.recommendedBudget,
-      adsRemaining: limit - (user.adsGenerated + 1)
+      adsRemaining: limit - user.adsGenerated, // not incremented here
+      valid: true
     });
 
   } catch (error) {
