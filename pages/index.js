@@ -197,11 +197,11 @@ export default function Home() {
           {/* Headline */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Headline</h4>
+              <h4 className="text-[#FFD700] font-medium">Headline</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('headline', result?.headline)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.headline ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -216,11 +216,11 @@ export default function Home() {
           {/* Body */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Body</h4>
+              <h4 className="text-[#FFD700] font-medium">Body</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('body', result?.body)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.body ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -235,11 +235,11 @@ export default function Home() {
           {/* Call to Action */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Call to Action</h4>
+              <h4 className="text-[#FFD700] font-medium">Call to Action</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('callToAction', result?.callToAction)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.callToAction ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -254,11 +254,11 @@ export default function Home() {
           {/* Targeting Radius */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Targeting Radius</h4>
+              <h4 className="text-[#FFD700] font-medium">Targeting Radius</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('radius', targeting?.radius)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.radius ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -273,11 +273,11 @@ export default function Home() {
           {/* Demographic Targeting */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Demographic Targeting</h4>
+              <h4 className="text-[#FFD700] font-medium">Demographic Targeting</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('demographic', targeting?.demographic)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.demographic ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -292,11 +292,11 @@ export default function Home() {
           {/* Keyword Suggestions */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Keyword Suggestions</h4>
+              <h4 className="text-[#FFD700] font-medium">Keyword Suggestions</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('keywords', targeting?.keywords)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.keywords ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -311,11 +311,11 @@ export default function Home() {
           {/* Recommended Budget */}
           <div className="bg-gray-800/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-[#D4AF37] font-medium">Recommended Budget</h4>
+              <h4 className="text-[#FFD700] font-medium">Recommended Budget</h4>
               <div className="relative group">
                 <button
                   onClick={getCopyHandler('recommendedBudget', result?.recommendedBudget)}
-                  className="text-gray-400 hover:text-[#D4AF37] transition-colors"
+                  className="text-gray-400 hover:text-[#FFD700] transition-colors"
                 >
                   {copied.recommendedBudget ? <FiCheck size={20} /> : <FiCopy size={20} />}
                 </button>
@@ -363,23 +363,23 @@ export default function Home() {
   // Upgrade Modal
   const UpgradeModal = () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#181c23] rounded-xl p-8 max-w-md w-[90%] mx-auto relative">
+      <div className="bg-[#181c23] rounded-xl p-8 max-w-md w-[90%] mx-auto relative text-center">
         <button
           onClick={() => setShowUpgradeModal(false)}
           className="absolute top-4 right-4 text-gray-400 hover:text-white opacity-80 hover:opacity-100 transition-opacity"
         >
           <FiX size={24} />
         </button>
-        <h3 className="text-2xl font-bold text-white mb-4">You've Reached Your Limit</h3>
-        <p className="text-gray-300 mb-6">
+        <h3 className="text-2xl font-bold text-white mb-4 text-center">You've Reached Your Limit</h3>
+        <p className="text-gray-300 mb-6 text-center">
           You've generated 3 ads this month on the free plan. Upgrade to Premium to unlock 100 ads/month, advanced targeting, and professional copy tailored for every platform.
         </p>
-        <div className="bg-gray-800/50 p-4 rounded-lg mb-6">
-          <p className="text-2xl font-bold text-[#D4AF37]">$12.99<span className="text-base text-gray-400">/month</span></p>
+        <div className="bg-gray-800/50 p-4 rounded-lg mb-6 flex justify-center items-center">
+          <p className="text-2xl font-bold text-[#FFD700] text-center">$12.99<span className="text-base text-gray-400">/month</span></p>
         </div>
         <button
           onClick={() => handleCheckout('premium')}
-          className="w-full px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
+          className="w-full px-6 py-3 bg-[#FFD700] hover:bg-[#e6c200] text-black rounded-lg font-medium transition text-center"
         >
           Upgrade Now
         </button>
@@ -407,11 +407,11 @@ export default function Home() {
           You've generated 3 ads this month on the free plan. Upgrade to Premium to unlock 100 ads/month, advanced targeting, and professional copy tailored for every platform.
         </p>
         <div className="bg-gray-800/50 p-4 rounded-lg mb-6">
-          <p className="text-2xl font-bold text-[#D4AF37]">$12.99<span className="text-base text-gray-400">/month</span></p>
+          <p className="text-2xl font-bold text-[#FFD700]">$12.99<span className="text-base text-gray-400">/month</span></p>
         </div>
         <button
           onClick={() => handleCheckout('premium')}
-          className="w-full px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
+          className="w-full px-6 py-3 bg-[#FFD700] hover:bg-[#e6c200] text-black rounded-lg font-medium transition"
         >
           Upgrade Now
         </button>
@@ -453,7 +453,7 @@ export default function Home() {
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={scrollToForm}
-                    className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                    className="bg-[#FFD700] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#e6c200] transition"
                   >
                     Generate Ad Copy
                   </button>
@@ -467,7 +467,7 @@ export default function Home() {
               ) : (
                 <a
                   href="/sign-in"
-                  className="bg-[#D4AF37] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#C19B2E] transition"
+                  className="bg-[#FFD700] text-black px-6 py-2 rounded-lg font-medium hover:bg-[#e6c200] transition"
                 >
                   Sign In
                 </a>
@@ -488,20 +488,20 @@ export default function Home() {
           >
             {isSignedIn ? (
               <>
-                <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
+                <p className="text-[#FFD700] text-sm uppercase tracking-wider font-medium">
                   Welcome back, {user.firstName || user.emailAddresses[0].emailAddress}!
                 </p>
                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
-                  Ready to Create Your Next <span className="text-[#D4AF37]">High-Converting</span> Ad?
+                  Ready to Create Your Next <span className="text-[#FFD700]">High-Converting</span> Ad?
                 </h1>
               </>
             ) : (
               <>
-                <p className="text-[#D4AF37] text-sm uppercase tracking-wider font-medium">
+                <p className="text-[#FFD700] text-sm uppercase tracking-wider font-medium">
                   Join 100+ marketers using Ad Pro AI
                 </p>
                 <h1 className="text-5xl md:text-7xl font-bold tracking-tight max-w-4xl mx-auto">
-                  Generate <span className="text-[#D4AF37]">High-Converting</span> Ad Copy in Seconds
+                  Generate <span className="text-[#FFD700]">High-Converting</span> Ad Copy in Seconds
                 </h1>
               </>
             )}
@@ -517,7 +517,7 @@ export default function Home() {
                   }
                   scrollToForm();
                 }}
-                className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition"
+                className="bg-[#FFD700] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#e6c200] transition"
               >
                 {isSignedIn ? 'Generate Ad Copy Now' : 'Try it Free'} <FiArrowRight className="inline-block ml-2" />
               </button>
@@ -535,8 +535,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <FiZap className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiZap className="text-[#FFD700] text-4xl mb-4 relative z-10" />
               <h3 className="text-xl font-semibold mb-2 relative z-10">Generate High-Converting Ad Copy</h3>
               <p className="text-gray-400 relative z-10">Create compelling ad copy that drives results using advanced AI technology.</p>
             </motion.div>
@@ -544,8 +544,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <FiHelpCircle className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiHelpCircle className="text-[#FFD700] text-4xl mb-4 relative z-10" />
               <h3 className="text-xl font-semibold mb-2 relative z-10">Target the Right Audience</h3>
               <p className="text-gray-400 relative z-10">Optimize your ads for specific demographics and interests.</p>
             </motion.div>
@@ -553,8 +553,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="bg-gray-900 p-8 rounded-xl border border-gray-800 relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <FiCopy className="text-[#D4AF37] text-4xl mb-4 relative z-10" />
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <FiCopy className="text-[#FFD700] text-4xl mb-4 relative z-10" />
               <h3 className="text-xl font-semibold mb-2 relative z-10">Boost ROI Instantly</h3>
               <p className="text-gray-400 relative z-10">See immediate improvements in your ad performance and conversion rates.</p>
             </motion.div>
@@ -571,8 +571,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="text-center relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">1</span>
               </div>
               <h3 className="text-xl font-semibold mb-2 relative z-10">Fill Out Form</h3>
@@ -582,8 +582,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="text-center relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">2</span>
               </div>
               <h3 className="text-xl font-semibold mb-2 relative z-10">AI Writes Copy</h3>
@@ -593,8 +593,8 @@ export default function Home() {
               whileHover={{ y: -10 }}
               className="text-center relative overflow-hidden group"
             >
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
-              <div className="w-16 h-16 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD700]/10 rounded-full transform group-hover:scale-150 transition-transform duration-500" />
+              <div className="w-16 h-16 bg-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
                 <span className="text-black font-bold text-xl">3</span>
               </div>
               <h3 className="text-xl font-semibold mb-2 relative z-10">Copy & Launch</h3>
@@ -618,11 +618,11 @@ export default function Home() {
                       type="text"
                       value={formData.productName}
                       onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
                       required
                     />
                     <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                       <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                         Enter the name of your product or service
                       </div>
@@ -636,11 +636,11 @@ export default function Home() {
                       type="text"
                       value={formData.targetAudience}
                       onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
                       required
                     />
                     <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                       <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                         Describe your ideal customer (e.g., "Small business owners", "Tech enthusiasts")
                       </div>
@@ -655,11 +655,11 @@ export default function Home() {
                   <textarea
                     value={formData.productDescription}
                     onChange={(e) => setFormData({ ...formData, productDescription: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
                     required
                   />
                   <div className="absolute right-2 top-2 group">
-                    <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                    <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                     <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                       Describe your product's key features and benefits
                     </div>
@@ -672,7 +672,7 @@ export default function Home() {
                   <div className="flex items-center mb-2">
                     <label className="block text-sm font-medium">Tone</label>
                     <span className="ml-2 group relative">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                       <div className="absolute left-1/2 -translate-x-1/2 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                         Choose the tone that best matches your brand voice
                       </div>
@@ -682,7 +682,7 @@ export default function Home() {
                     <select
                       value={formData.tone}
                       onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFD700] appearance-none"
                     >
                       <option value="">Select Tone</option>
                       <option value="professional">Professional</option>
@@ -699,7 +699,7 @@ export default function Home() {
                   <div className="flex items-center mb-2">
                     <label className="block text-sm font-medium">Platform</label>
                     <span className="ml-2 group relative">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                       <div className="absolute left-1/2 -translate-x-1/2 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                         Select where your ad will appear
                       </div>
@@ -709,7 +709,7 @@ export default function Home() {
                     <select
                       value={formData.platform}
                       onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFD700] appearance-none"
                       required
                     >
                       <option value="">Select Platform</option>
@@ -732,11 +732,11 @@ export default function Home() {
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
                     placeholder="e.g., San Diego, CA"
                   />
                   <div className="absolute right-2 top-2 group">
-                    <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                    <FiHelpCircle className="text-gray-400 hover:text-[#FFD700] cursor-help" />
                     <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                       Enter a city, region, or country to target your ad geographically (optional)
                     </div>
@@ -747,7 +747,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#D4AF37] text-black py-3 rounded-lg font-medium hover:bg-[#C19B2E] transition flex items-center justify-center"
+                className="w-full bg-[#FFD700] text-black py-3 rounded-lg font-medium hover:bg-[#e6c200] transition flex items-center justify-center"
               >
                 {isLoading ? 'Generating...' : 'Generate Ad Copy'}
                 {!isLoading && <FiChevronRight className="ml-2" />}
@@ -915,7 +915,7 @@ export default function Home() {
           <p className="text-gray-400 mb-8">No credit card required. Cancel anytime.</p>
           <button
             onClick={scrollToForm}
-            className="bg-[#D4AF37] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#C19B2E] transition"
+            className="bg-[#FFD700] text-black px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#e6c200] transition"
           >
             Generate Ad Copy Now
           </button>
