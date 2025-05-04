@@ -4,6 +4,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import { FiZap, FiHelpCircle, FiCopy, FiCheck, FiArrowRight, FiChevronRight, FiX, FiAlertCircle } from 'react-icons/fi'
+import { RxCrosshair } from 'react-icons/rx'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useUser } from '@clerk/nextjs'
@@ -537,7 +538,7 @@ export default function Home() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
               <FiZap className="text-[#FFD700] text-4xl mb-4 relative z-10" />
-              <h3 className="text-2xl font-extrabold mb-2 relative z-10 text-[#FFD700]">Generate High-Converting Ad Copy</h3>
+              <h3 className="text-2xl font-extrabold mb-2 relative z-10 text-[#FFD700]">High-Converting Ad Copy</h3>
               <p className="text-lg font-semibold text-white/90 relative z-10">Create compelling ad copy that drives results using advanced AI technology.</p>
             </motion.div>
             <motion.div
@@ -545,7 +546,7 @@ export default function Home() {
               className="bg-[#181c23] p-8 rounded-xl relative overflow-hidden group transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.10)] border border-[#FFD700]/40 flex flex-col items-center justify-center text-center"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/10 to-transparent pointer-events-none" />
-              <FiHelpCircle className="text-[#FFD700] text-4xl mb-4 relative z-10" />
+              <RxCrosshair className="text-[#FFD700] text-4xl mb-4 relative z-10" />
               <h3 className="text-2xl font-extrabold mb-2 relative z-10 text-[#FFD700]">Target the Right Audience</h3>
               <p className="text-lg font-semibold text-white/90 relative z-10">Optimize your ads for specific demographics and interests.</p>
             </motion.div>
