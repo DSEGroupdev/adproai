@@ -362,26 +362,27 @@ export default function Home() {
 
   // Upgrade Modal
   const UpgradeModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">Upgrade to Premium</h3>
-        <p className="text-gray-600 mb-6">
-          You've reached your monthly limit of 5 ad generations. Upgrade to unlock unlimited generations and more features!
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="bg-[#181c23] rounded-xl p-8 max-w-md w-[90%] mx-auto relative">
+        <button
+          onClick={() => setShowUpgradeModal(false)}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white opacity-80 hover:opacity-100 transition-opacity"
+        >
+          <FiX size={24} />
+        </button>
+        <h3 className="text-2xl font-bold text-white mb-4">You've Reached Your Limit</h3>
+        <p className="text-gray-300 mb-6">
+          You've generated 3 ads this month on the free plan. Upgrade to Premium to unlock 100 ads/month, advanced targeting, and professional copy tailored for every platform.
         </p>
-        <div className="space-y-4">
-          <button
-            onClick={() => router.push('/pricing')}
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
-          >
-            View Pricing Plans
-          </button>
-          <button
-            onClick={() => setShowUpgradeModal(false)}
-            className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            Maybe Later
-          </button>
+        <div className="bg-gray-800/50 p-4 rounded-lg mb-6">
+          <p className="text-2xl font-bold text-[#D4AF37]">$12.99<span className="text-base text-gray-400">/month</span></p>
         </div>
+        <button
+          onClick={() => handleCheckout('premium')}
+          className="w-full px-6 py-3 bg-[#D4AF37] hover:bg-[#C19B2E] text-black rounded-lg font-medium transition"
+        >
+          Upgrade Now
+        </button>
       </div>
     </div>
   );
