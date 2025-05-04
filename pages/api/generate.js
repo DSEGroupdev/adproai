@@ -57,12 +57,27 @@ export default async function handler(req, res) {
     }
 
     // Generate ad copy using OpenAI
-    const prompt = `You are a performance ad strategist. Based on the following inputs, generate:
-- A high-converting ad copy (headline, body, CTA) optimized for the selected platform.
-- Suggested targeting radius and demographics.
-- Recommended keywords to include in targeting.
-- A monthly ad budget estimate.
-The output should be customized for the selected ad platform (Facebook, Google Ads, LinkedIn, or Instagram), respecting platform-specific best practices and character limits.
+    const prompt = `You are a world-class paid media strategist. Your goal is to generate complete ad copy and platform-specific targeting advice for the following product or service. Always return all fields in the JSON response.
+
+Return your response in this JSON format:
+{
+  "headline": "Short, high-converting, benefit-driven headline optimized for [platform]",
+  "body": "Persuasive ad copy with clear benefits, social proof or urgency. Max 125 words for Meta platforms.",
+  "callToAction": "Strong CTA tailored to platform (e.g., Book Now, Get Offer, Contact Us)",
+  "targeting": {
+    "radius": "Suggested ad targeting radius based on product and location (e.g., 15 miles)",
+    "demographic": "Suggested age range, gender, interests, job titles, etc.",
+    "keywords": "Suggested keyword themes for ad targeting or SEO"
+  },
+  "recommendedBudget": "Suggested monthly ad budget in USD based on audience size and platform"
+}
+
+Instructions:
+- Respect the selected tone and platform
+- Headline must be punchy and emotionally engaging
+- Body must be platform-appropriate (e.g. Meta vs Google vs LinkedIn)
+- All fields must always be returned
+- CTA should avoid generic terms like 'Sign Up Now' unless highly relevant
 
 Inputs:
 - Product: ${product}
@@ -71,19 +86,7 @@ Inputs:
 - Tone: ${tone}
 - Platform: ${platform}
 - Location (if provided): ${location}
-
-Respond only in strict JSON, like:
-{
-  "headline": "...",
-  "body": "...",
-  "callToAction": "...",
-  "suggestedTargeting": {
-    "radius": "15 miles around San Diego",
-    "demographic": "Men 18–45, enduro riders",
-    "keywords": ["enduro training", "dirt bike school"]
-  },
-  "recommendedBudget": "$250–300/month"
-}`;
+`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
@@ -117,11 +120,11 @@ Respond only in strict JSON, like:
         headline: obj.headline || '',
         body: obj.body || '',
         callToAction: obj.callToAction || obj.call_to_action || '',
-        suggestedTargeting: obj.suggestedTargeting || {
-          radius: '',
-          demographic: '',
-          keywords: []
-        },
+        targeting: obj.targeting ? {
+          radius: obj.targeting.radius || '',
+          demographic: obj.targeting.demographic || '',
+          keywords: typeof obj.targeting.keywords === 'string' ? obj.targeting.keywords : Array.isArray(obj.targeting.keywords) ? obj.targeting.keywords.join(', ') : ''
+        } : { radius: '', demographic: '', keywords: '' },
         recommendedBudget: obj.recommendedBudget || obj.recommended_budget || '',
       };
     };
@@ -139,7 +142,7 @@ Respond only in strict JSON, like:
       headline: mappedAdCopy.headline,
       body: mappedAdCopy.body,
       callToAction: mappedAdCopy.callToAction,
-      suggestedTargeting: mappedAdCopy.suggestedTargeting,
+      targeting: mappedAdCopy.targeting,
       recommendedBudget: mappedAdCopy.recommendedBudget,
       adsRemaining: limit - (user.adsGenerated + 1)
     });
