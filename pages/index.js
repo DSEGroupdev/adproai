@@ -74,20 +74,11 @@ export default function Home() {
         }),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        if (res.status === 403 && errorData.error === 'ad_limit_reached') {
-          setShowAdLimitModal(true);
-          return;
-        }
-        throw new Error(errorData.error || 'Failed to generate ad copy');
-      }
-
       const data = await res.json();
 
-      // Ensure the data has the expected structure
-      if (!data.headline || !data.body || !data.callToAction) {
-        throw new Error("Invalid response format from server");
+      if (!res.ok || !data.valid || !data.headline || !data.body || !data.callToAction) {
+        console.error("Ad generation failed or invalid response:", data);
+        throw new Error(data.error || "Invalid response format from server");
       }
 
       // Set the result with proper structure
@@ -95,9 +86,16 @@ export default function Home() {
         headline: data.headline,
         body: data.body,
         callToAction: data.callToAction,
-        targeting: data.targeting || { demographics: [], geographics: [] }
+        targeting: data.targeting || { radius: '', demographic: '', keywords: '' },
+        recommendedBudget: data.recommendedBudget || ''
       });
       setRemaining(data.adsRemaining);
+
+      // Only increment ad counter after successful, validated, and rendered result
+      await fetch("/api/track-ad-generation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
 
     } catch (err) {
       console.error("Generation error:", err);
