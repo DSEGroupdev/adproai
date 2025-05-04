@@ -680,50 +680,6 @@ export default function Home() {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="radius">
-                  Ad Radius (miles)
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="radius"
-                  type="number"
-                  placeholder="e.g., 25"
-                  value={formData.radius}
-                  onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="keywords">
-                  Keyword Focus
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="keywords"
-                  type="text"
-                  placeholder="e.g., luxury cars, electric vehicles"
-                  value={formData.keywords}
-                  onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="demographic">
-                    Target Demographic
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="demographic"
-                    type="text"
-                    placeholder="e.g., women 25-45, tech founders"
-                    value={formData.demographic}
-                    onChange={(e) => setFormData({ ...formData, demographic: e.target.value })}
-                  />
-                </div>
-              </div>
-
               <button
                 type="submit"
                 disabled={isLoading}
