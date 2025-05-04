@@ -25,7 +25,9 @@ export default function Home() {
     platform: '',
     maxLength: 100,
     location: '',
-    demographic: ''
+    demographic: '',
+    radius: '',
+    keywords: ''
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -66,7 +68,9 @@ export default function Home() {
           tone: formData.tone,
           platform: formData.platform,
           location: formData.location,
-          demographic: formData.demographic
+          demographic: formData.demographic,
+          radius: formData.radius,
+          keywords: formData.keywords
         }),
       });
 
@@ -606,12 +610,20 @@ export default function Home() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Tone</label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium">Tone</label>
+                    <span className="ml-2 group relative">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute left-1/2 -translate-x-1/2 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Choose the tone that best matches your brand voice
+                      </div>
+                    </span>
+                  </div>
                   <div className="relative">
                     <select
                       value={formData.tone}
                       onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
+                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] appearance-none"
                     >
                       <option value="">Select Tone</option>
                       <option value="professional">Professional</option>
@@ -619,19 +631,21 @@ export default function Home() {
                       <option value="friendly">Friendly</option>
                       <option value="convincing">Convincing</option>
                     </select>
-                    <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
-                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                        Choose the tone that best matches your brand voice
-                      </div>
-                    </div>
-                    <div className="absolute right-3 top-3 pointer-events-none">
+                    <div className="pointer-events-none absolute right-3 top-3">
                       <FiChevronRight className="text-gray-400 transform rotate-90" />
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Platform</label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium">Platform</label>
+                    <span className="ml-2 group relative">
+                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
+                      <div className="absolute left-1/2 -translate-x-1/2 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        Select where your ad will appear
+                      </div>
+                    </span>
+                  </div>
                   <div className="relative">
                     <select
                       value={formData.platform}
@@ -645,55 +659,68 @@ export default function Home() {
                       <option value="instagram">Instagram</option>
                       <option value="linkedin">LinkedIn</option>
                     </select>
-                    <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
-                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                        Select where your ad will appear
-                      </div>
-                    </div>
-                    <div className="absolute right-3 top-3 pointer-events-none">
+                    <div className="pointer-events-none absolute right-3 top-3">
                       <FiChevronRight className="text-gray-400 transform rotate-90" />
                     </div>
                   </div>
                 </div>
               </div>
 
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
+                  Target Location
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="location"
+                  type="text"
+                  placeholder="e.g., San Diego, CA"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="radius">
+                  Ad Radius (miles)
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="radius"
+                  type="number"
+                  placeholder="e.g., 25"
+                  value={formData.radius}
+                  onChange={(e) => setFormData({ ...formData, radius: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="keywords">
+                  Keyword Focus
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="keywords"
+                  type="text"
+                  placeholder="e.g., luxury cars, electric vehicles"
+                  value={formData.keywords}
+                  onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+                />
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Target Location</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
-                      placeholder="e.g., Dubai, Europe, USA"
-                    />
-                    <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
-                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                        Enter a specific country, region, or city you'd like to target (e.g., Dubai, Europe, USA).
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Target Demographic</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={formData.demographic}
-                      onChange={(e) => setFormData({ ...formData, demographic: e.target.value })}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
-                      placeholder="e.g., women 25-45, tech founders"
-                    />
-                    <div className="absolute right-2 top-2 group">
-                      <FiHelpCircle className="text-gray-400 hover:text-[#D4AF37] cursor-help" />
-                      <div className="absolute right-0 top-6 w-64 p-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                        Describe your ideal audience: age, gender, interests, or occupation (e.g., women 25–45, tech founders).
-                      </div>
-                    </div>
-                  </div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="demographic">
+                    Target Demographic
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="demographic"
+                    type="text"
+                    placeholder="e.g., women 25-45, tech founders"
+                    value={formData.demographic}
+                    onChange={(e) => setFormData({ ...formData, demographic: e.target.value })}
+                  />
                 </div>
               </div>
 
