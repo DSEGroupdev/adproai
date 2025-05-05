@@ -71,12 +71,12 @@ export default async function handler(
     const product = subscription.plan.product;
 
     // Calculate usage
-    const usage = await stripe.subscriptionItems.listUsageRecordSummaries(
+    const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
       subscription.items.data[0].id
     );
 
-    const totalUsage = usage.data[0]?.total_usage || 0;
-    const limit = subscription.plan.metadata?.adsLimit || 100;
+    const totalUsage = Number(usageRecords.data[0]?.total_usage || 0);
+    const limit = Number(subscription.plan.metadata?.adsLimit || 100);
     const remaining = Math.max(0, limit - totalUsage);
 
     console.log('Subscription details:', {
