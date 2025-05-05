@@ -36,6 +36,12 @@ export default async function handler(req, res) {
       metadata: { clerkUserId: userId }
     });
 
+    console.log('Stripe customers response:', {
+      count: customers.data.length,
+      hasMore: customers.has_more,
+      customerIds: customers.data.map(c => c.id)
+    });
+
     if (!customers.data.length) {
       console.log('No Stripe customer found for user:', userId);
       return res.status(404).json({ 
