@@ -8,6 +8,12 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Stripe configuration is missing');
 }
 
+console.log('Environment check:', {
+  hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+  hasAppUrl: !!process.env.NEXT_PUBLIC_APP_URL,
+  appUrl: process.env.NEXT_PUBLIC_APP_URL
+});
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(
@@ -59,7 +65,9 @@ export default async function handler(
       });
     }
 
-    const subscription = subscriptions.data[0];
+    const subscription = subscriptions.data[0] as Stripe.Subscription & {
+      plan: Stripe.Plan & { product: Stripe.Product }
+    };
     const product = subscription.plan.product;
 
     // Calculate usage
@@ -68,7 +76,7 @@ export default async function handler(
     );
 
     const totalUsage = usage.data[0]?.total_usage || 0;
-    const limit = subscription.plan.metadata.adsLimit || 100;
+    const limit = subscription.plan.metadata?.adsLimit || 100;
     const remaining = Math.max(0, limit - totalUsage);
 
     console.log('Subscription details:', {

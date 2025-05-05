@@ -13,6 +13,12 @@ if (!process.env.NEXT_PUBLIC_APP_URL) {
   throw new Error('App URL configuration is missing');
 }
 
+console.log('Environment check:', {
+  hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+  hasAppUrl: !!process.env.NEXT_PUBLIC_APP_URL,
+  appUrl: process.env.NEXT_PUBLIC_APP_URL
+});
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(
