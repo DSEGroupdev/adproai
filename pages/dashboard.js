@@ -77,7 +77,7 @@ export default function Dashboard() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            Welcome, {user.emailAddresses[0].emailAddress}!
+            Welcome, {user.firstName || user.emailAddresses[0].emailAddress}!
           </h1>
           <p className="text-xl text-white/80">
             Your AI-Powered Ad Copy Dashboard
