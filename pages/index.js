@@ -327,6 +327,39 @@ export default function Home() {
             </div>
             <p className="text-white whitespace-pre-line">{result?.recommendedBudget}</p>
           </div>
+
+          {/* Targeting Suggestions */}
+          {result.targeting && (
+            <div>
+              <h4 className="text-gold font-medium mb-1">Targeting Suggestions</h4>
+              <div className="space-y-2">
+                {targeting.age && (
+                  <div>
+                    <h5 className="text-white font-medium">Age Range</h5>
+                    <p className="text-gray-300">{targeting.age}</p>
+                  </div>
+                )}
+                {targeting.gender && (
+                  <div>
+                    <h5 className="text-white font-medium">Gender</h5>
+                    <p className="text-gray-300">{targeting.gender}</p>
+                  </div>
+                )}
+                {targeting.interests && (
+                  <div>
+                    <h5 className="text-white font-medium">Interests</h5>
+                    <p className="text-gray-300">{targeting.interests}</p>
+                  </div>
+                )}
+                {targeting.job_titles && (
+                  <div>
+                    <h5 className="text-white font-medium">Job Titles</h5>
+                    <p className="text-gray-300">{targeting.job_titles}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -798,24 +831,28 @@ export default function Home() {
                     <div>
                       <h4 className="text-gold font-medium mb-1">Targeting Suggestions</h4>
                       <div className="space-y-2">
-                        {adResult.targeting.demographics && (
+                        {adResult.targeting.age && (
                           <div>
-                            <h5 className="text-white font-medium">Demographics</h5>
-                            <ul className="list-disc list-inside text-gray-300">
-                              {adResult.targeting.demographics.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
+                            <h5 className="text-white font-medium">Age Range</h5>
+                            <p className="text-gray-300">{adResult.targeting.age}</p>
                           </div>
                         )}
-                        {adResult.targeting.geographics && (
+                        {adResult.targeting.gender && (
                           <div>
-                            <h5 className="text-white font-medium">Geographics</h5>
-                            <ul className="list-disc list-inside text-gray-300">
-                              {adResult.targeting.geographics.map((item, index) => (
-                                <li key={index}>{item}</li>
-                              ))}
-                            </ul>
+                            <h5 className="text-white font-medium">Gender</h5>
+                            <p className="text-gray-300">{adResult.targeting.gender}</p>
+                          </div>
+                        )}
+                        {adResult.targeting.interests && (
+                          <div>
+                            <h5 className="text-white font-medium">Interests</h5>
+                            <p className="text-gray-300">{adResult.targeting.interests}</p>
+                          </div>
+                        )}
+                        {adResult.targeting.job_titles && (
+                          <div>
+                            <h5 className="text-white font-medium">Job Titles</h5>
+                            <p className="text-gray-300">{adResult.targeting.job_titles}</p>
                           </div>
                         )}
                       </div>
