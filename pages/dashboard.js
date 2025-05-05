@@ -1,89 +1,123 @@
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
+import { motion } from 'framer-motion';
+import { FiZap, FiCreditCard, FiArrowRight } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
-import { auth } from '@clerk/nextjs';
-import prisma from '../lib/prisma';
 
 export default function Dashboard() {
+  const { user, isSignedIn } = useUser();
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const { userId } = auth();
-        if (!userId) {
-          router.push('/');
-          return;
-        }
+    if (!isSignedIn) {
+      router.push('/');
+      return;
+    }
 
-        const response = await fetch('/api/user');
+    // Fetch subscription data
+    const fetchSubscription = async () => {
+      try {
+        const response = await fetch('/api/subscription');
         const data = await response.json();
-        setUser(data);
+        setSubscription(data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching subscription:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
-  }, [router]);
+    fetchSubscription();
+  }, [isSignedIn, router]);
 
-  if (loading) {
+  if (!isSignedIn || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFD700]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center">
-          <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Welcome to your Dashboard
+    <div className="min-h-screen bg-[#0a0d14] text-white">
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        {/* Welcome Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            Welcome, {user.firstName}!
           </h1>
-          <p className="mt-4 text-lg text-gray-600">
-            Manage your ad generation account
+          <p className="text-xl text-white/80">
+            Your AI-Powered Ad Copy Dashboard
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mt-12 bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900">Your Plan</h2>
-          <div className="mt-4">
-            <p className="text-lg">
-              Current Plan: <span className="font-semibold">{user?.plan || 'Free'}</span>
-            </p>
-            <p className="text-lg mt-2">
-              Ads Generated This Month: <span className="font-semibold">{user?.adsGenerated || 0}</span>
-            </p>
-            <p className="text-lg mt-2">
-              Monthly Limit: <span className="font-semibold">{user?.plan === 'PREMIUM' ? '100' : '3'} ads</span>
-            </p>
+        {/* Subscription Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-[#181c23] rounded-xl p-8 mb-8 border border-[#FFD700]/40 shadow-[0_0_30px_rgba(255,215,0,0.10)]"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-[#FFD700] mb-2">
+                {subscription?.plan || 'Pro Plan'}
+              </h2>
+              <p className="text-white/80">
+                {subscription?.adsRemaining || 100} ads remaining this month
+              </p>
+            </div>
+            <FiZap className="text-[#FFD700] text-4xl" />
+          </div>
+          
+          <div className="h-2 bg-[#2a2f3a] rounded-full mb-6">
+            <div 
+              className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded-full"
+              style={{ width: `${(subscription?.adsUsed / subscription?.adsTotal) * 100 || 0}%` }}
+            ></div>
           </div>
 
-          {user?.plan === 'FREE' && (
-            <div className="mt-6">
-              <button
-                onClick={() => router.push('/pricing')}
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
-              >
-                Upgrade to Premium
-              </button>
-            </div>
-          )}
-        </div>
+          <div className="flex justify-between text-sm text-white/60">
+            <span>{subscription?.adsUsed || 0} ads used</span>
+            <span>{subscription?.adsTotal || 100} total ads</span>
+          </div>
+        </motion.div>
 
-        <div className="mt-8 text-center">
-          <button
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="grid md:grid-cols-2 gap-6"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => router.push('/')}
-            className="text-indigo-600 hover:text-indigo-500"
+            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-[#FFD700]/20 transition-all duration-300"
           >
-            Back to Home
-          </button>
-        </div>
+            <FiZap className="text-xl" />
+            Generate New Ad
+            <FiArrowRight className="text-xl" />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => router.push('/api/create-portal-session')}
+            className="bg-[#181c23] text-[#FFD700] font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 border border-[#FFD700]/40 hover:bg-[#1f232c] transition-all duration-300"
+          >
+            <FiCreditCard className="text-xl" />
+            Manage Billing
+            <FiArrowRight className="text-xl" />
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
