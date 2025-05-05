@@ -443,7 +443,12 @@ export default function Home() {
                 />
               </div>
               {isSignedIn && (
-                <span className="text-gray-300">Welcome, {user.firstName || user.emailAddresses[0].emailAddress}</span>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="bg-[#FFD700] text-black px-4 py-1.5 rounded-lg font-medium hover:bg-[#e6c200] transition text-sm"
+                >
+                  Dashboard
+                </button>
               )}
             </div>
             <div className="hidden md:flex items-center space-x-8">
