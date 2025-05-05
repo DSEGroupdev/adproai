@@ -31,9 +31,9 @@ export default async function handler(req, res) {
 
     // Get customer from Stripe using Clerk user ID
     console.log('Searching for Stripe customer with metadata:', { clerkUserId: userId });
-    const customers = await stripe.customers.list({
-      limit: 1,
-      metadata: { clerkUserId: userId }
+    const customers = await stripe.customers.search({
+      query: `metadata['clerkUserId']:'${userId}'`,
+      limit: 1
     });
 
     console.log('Stripe customers response:', {
