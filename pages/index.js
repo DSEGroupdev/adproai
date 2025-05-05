@@ -613,7 +613,13 @@ export default function Home() {
       {/* Generator Form Section */}
       <section id="generator-form" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-gray-900 p-8 rounded-xl border border-gray-800">
+          <motion.div
+            id="generate"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-[#181c23] rounded-xl p-8 border border-[#FFD700]/40 shadow-[0_0_30px_rgba(255,215,0,0.10)]"
+          >
             <h2 className="text-2xl font-bold mb-6">Generate Your Ad Copy</h2>
             <form onSubmit={handleGenerateAd} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -818,7 +824,7 @@ export default function Home() {
                 </div>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 

@@ -9,6 +9,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [billingError, setBillingError] = useState(null);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -32,6 +33,32 @@ export default function Dashboard() {
     fetchSubscription();
   }, [isSignedIn, router]);
 
+  const handleManageBilling = async () => {
+    try {
+      setBillingError(null);
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create billing portal session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Billing portal error:', error);
+      setBillingError('Billing portal not available yet. Please try again later.');
+    }
+  };
+
+  const handleGenerateAd = () => {
+    router.push('/#generate');
+  };
+
   if (!isSignedIn || loading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
@@ -50,7 +77,7 @@ export default function Dashboard() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            Welcome, {user.firstName}!
+            Welcome, {user.emailAddresses[0].emailAddress}!
           </h1>
           <p className="text-xl text-white/80">
             Your AI-Powered Ad Copy Dashboard
@@ -99,7 +126,7 @@ export default function Dashboard() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => router.push('/')}
+            onClick={handleGenerateAd}
             className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-[#FFD700]/20 transition-all duration-300"
           >
             <FiZap className="text-xl" />
@@ -110,7 +137,7 @@ export default function Dashboard() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => router.push('/api/create-portal-session')}
+            onClick={handleManageBilling}
             className="bg-[#181c23] text-[#FFD700] font-bold py-4 px-8 rounded-xl flex items-center justify-center gap-3 border border-[#FFD700]/40 hover:bg-[#1f232c] transition-all duration-300"
           >
             <FiCreditCard className="text-xl" />
@@ -118,6 +145,17 @@ export default function Dashboard() {
             <FiArrowRight className="text-xl" />
           </motion.button>
         </motion.div>
+
+        {/* Billing Error Message */}
+        {billingError && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-center"
+          >
+            {billingError}
+          </motion.div>
+        )}
       </div>
     </div>
   );
