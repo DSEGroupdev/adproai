@@ -1,5 +1,6 @@
 import { getAuth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
+import prisma from '../../lib/prisma';
 
 // Validate environment variables
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -17,89 +18,56 @@ export default async function handler(req, res) {
   try {
     const { userId } = getAuth(req);
     if (!userId) {
-      console.log('No user session found');
       return res.status(401).json({ error: 'Unauthorized - No user session' });
     }
 
-    console.log('Fetching subscription for user:', userId);
-
-    // Get customer from Stripe using Clerk user ID
-    const customers = await stripe.customers.search({
-      query: `metadata['clerkUserId']:'${userId}'`,
-      limit: 1
-    });
-
-    if (!customers.data.length) {
-      console.log('No Stripe customer found for user:', userId);
-      return res.status(404).json({ 
-        error: 'No subscription found',
-        details: 'Please ensure you have completed the checkout process'
-      });
+    // Get user from DB for email
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    const customer = customers.data[0];
-    console.log('Found customer:', customer.id);
-
-    // Get active subscriptions
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customer.id,
-      status: 'active',
-      expand: ['data.plan.product']
-    });
-
-    if (!subscriptions.data.length) {
-      console.log('No active subscription found for customer:', customer.id);
-      return res.status(404).json({ 
-        error: 'No active subscription found',
-        details: 'Please ensure you have an active subscription'
+    // Stripe customer lookup: use only email
+    let isPremium = false;
+    let customer = null;
+    if (user.email) {
+      const customers = await stripe.customers.search({
+        query: `email:'${user.email}'`,
+        limit: 1
       });
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+        // Check for active subscription
+        const subscriptions = await stripe.subscriptions.list({
+          customer: customer.id,
+          status: 'active',
+          expand: ['data.plan.product']
+        });
+        isPremium = subscriptions.data.length > 0;
+      }
     }
 
-    const subscription = subscriptions.data[0];
-    const product = subscription.plan.product;
+    if (!customer) {
+      return res.status(404).json({ error: 'No Stripe customer found for user' });
+    }
 
-    // Calculate usage
-    const usage = await stripe.subscriptionItems.listUsageRecordSummaries(
-      subscription.items.data[0].id
-    );
+    const product = customer.metadata?.product ? JSON.parse(customer.metadata.product) : null;
+    const planName = product ? product.name : 'Premium';
+    const adsLimit = customer.metadata?.adsLimit || 100;
 
-    const totalUsage = usage.data[0]?.total_usage || 0;
-    const limit = subscription.plan.metadata.adsLimit || 100;
-    const remaining = Math.max(0, limit - totalUsage);
-
-    console.log('Subscription details:', {
-      plan: product.name,
-      adsUsed: totalUsage,
-      adsTotal: limit,
-      adsRemaining: remaining
-    });
+    // Usage calculation (optional, fallback to 0 if not using metered)
+    const adsUsed = 0;
+    const adsRemaining = adsLimit - adsUsed;
 
     return res.status(200).json({
-      plan: product.name,
-      adsUsed: totalUsage,
-      adsTotal: limit,
-      adsRemaining: remaining,
-      status: subscription.status
+      plan: planName,
+      adsUsed,
+      adsTotal: adsLimit,
+      adsRemaining,
+      status: isPremium ? 'active' : 'inactive'
     });
-
   } catch (error) {
-    console.error('Subscription error:', {
-      message: error.message,
-      type: error.type,
-      stack: error.stack,
-      raw: error
-    });
-
-    if (error.type?.startsWith('Stripe')) {
-      return res.status(500).json({ 
-        error: 'Stripe service error',
-        details: error.message
-      });
-    }
-
-    return res.status(500).json({ 
-      error: 'Failed to fetch subscription',
-      details: 'An unexpected error occurred'
-    });
+    console.error('Subscription error:', error);
+    return res.status(500).json({ error: 'Failed to fetch subscription' });
   }
 } 

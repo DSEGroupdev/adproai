@@ -53,53 +53,23 @@ export default async function handler(req, res) {
     // Log the user's email from Clerk before searching Stripe
     console.log('User email from Clerk:', user.email);
 
-    // 1. Try to find Stripe customer by email
-    let customer = null;
-    let customers = await stripe.customers.search({
-      query: `email:'${user.email}'`,
-      limit: 1
-    });
-    if (customers.data.length > 0) {
-      customer = customers.data[0];
-    } else {
-      // 2. If not found, list customers and check metadata.clerkUserId
-      const allCustomers = await stripe.customers.list({ limit: 100 });
-      const match = allCustomers.data.find(c => c.metadata && c.metadata.clerkUserId === userId);
-      if (match) {
-        // 3. Update that customer's metadata.email to ensure future lookups work
-        await stripe.customers.update(match.id, {
-          email: user.email
-        });
-        customer = match;
-        console.log('Found customer by clerkUserId and updated email:', match.id);
-      } else {
-        // 4. No match at all
-        console.warn('Stripe customer not found for this user:', userId, user.email);
-        return res.status(404).json({ error: 'Stripe customer not found for this user' });
-      }
-    }
-
-    console.log('Stripe customers found:', {
-      count: customers.data.length,
-      customerIds: customers.data.map(c => c.id),
-      emails: customers.data.map(c => c.email)
-    });
-
+    // Stripe customer lookup: use only email
     let isPremium = false;
-    if (customer) {
-      const subscriptions = await stripe.subscriptions.list({
-        customer: customer.id,
-        status: 'active'
+    let customer = null;
+    if (user.email) {
+      const customers = await stripe.customers.search({
+        query: `email:'${user.email}'`,
+        limit: 1
       });
-
-      console.log('Stripe subscriptions:', {
-        count: subscriptions.data.length,
-        subscriptionIds: subscriptions.data.map(s => s.id),
-        statuses: subscriptions.data.map(s => s.status),
-        currentPeriodEnds: subscriptions.data.map(s => new Date(s.current_period_end * 1000).toISOString())
-      });
-
-      isPremium = subscriptions.data.length > 0;
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+        // Check for active subscription
+        const subscriptions = await stripe.subscriptions.list({
+          customer: customer.id,
+          status: 'active'
+        });
+        isPremium = subscriptions.data.length > 0;
+      }
     }
 
     console.log('Subscription status:', {
