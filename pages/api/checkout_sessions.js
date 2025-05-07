@@ -1,3 +1,4 @@
+import { getAuth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -8,6 +9,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    const { userId } = getAuth(req);
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     const { priceId } = req.body;
 
     if (!priceId) {
@@ -27,6 +33,7 @@ export default async function handler(req, res) {
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing`,
       metadata: {
         priceId,
+        clerkUserId: userId
       },
     });
 

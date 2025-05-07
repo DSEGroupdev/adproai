@@ -27,26 +27,51 @@ export default async function handler(req, res) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        const { userId } = session.metadata;
+        const { clerkUserId } = session.metadata;
+
+        if (!clerkUserId) {
+          console.error('No clerkUserId in session metadata:', session);
+          return res.status(400).json({ error: 'Missing clerkUserId in session metadata' });
+        }
+
+        // Create or update customer with clerkUserId
+        const customer = await stripe.customers.create({
+          metadata: {
+            clerkUserId: clerkUserId
+          }
+        });
 
         // Update user's plan to PREMIUM
         await prisma.user.update({
-          where: { clerkId: userId },
+          where: { clerkId: clerkUserId },
           data: { plan: 'PREMIUM' },
+        });
+
+        console.log('Updated user plan to PREMIUM:', {
+          clerkUserId,
+          customerId: customer.id
         });
 
         break;
       }
-      case 'checkout.session.expired':
-      case 'checkout.session.async_payment_failed': {
-        const session = event.data.object;
-        const { userId } = session.metadata;
+      case 'customer.subscription.deleted':
+      case 'customer.subscription.cancelled': {
+        const subscription = event.data.object;
+        const customer = await stripe.customers.retrieve(subscription.customer);
+        const { clerkUserId } = customer.metadata;
 
-        // Keep user on FREE plan
-        await prisma.user.update({
-          where: { clerkId: userId },
-          data: { plan: 'FREE' },
-        });
+        if (clerkUserId) {
+          // Update user's plan back to FREE
+          await prisma.user.update({
+            where: { clerkId: clerkUserId },
+            data: { plan: 'FREE' },
+          });
+
+          console.log('Updated user plan to FREE:', {
+            clerkUserId,
+            customerId: customer.id
+          });
+        }
 
         break;
       }
