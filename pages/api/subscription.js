@@ -27,24 +27,39 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Stripe customer lookup: use only email
-    let isPremium = false;
+    // 1. Try to find Stripe customer by metadata clerkUserId
     let customer = null;
-    if (user.email) {
-      const customers = await stripe.customers.search({
+    let customers = await stripe.customers.search({
+      query: `metadata['clerkUserId']:'${userId}'`,
+      limit: 1
+    });
+    if (customers.data.length > 0) {
+      customer = customers.data[0];
+    } else if (user.email) {
+      // 2. Fall back to searching by email match
+      customers = await stripe.customers.search({
         query: `email:'${user.email}'`,
         limit: 1
       });
       if (customers.data.length > 0) {
         customer = customers.data[0];
-        // Check for active subscription
-        const subscriptions = await stripe.subscriptions.list({
-          customer: customer.id,
-          status: 'active',
-          expand: ['data.plan.product']
-        });
-        isPremium = subscriptions.data.length > 0;
+        // 3. If missing correct metadata, update it
+        if (!customer.metadata || customer.metadata.clerkUserId !== userId) {
+          await stripe.customers.update(customer.id, {
+            metadata: { ...customer.metadata, clerkUserId: userId }
+          });
+          console.log('Updated Stripe customer metadata with clerkUserId:', userId);
+        }
       }
+    }
+    let isPremium = false;
+    if (customer) {
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customer.id,
+        status: 'active',
+        expand: ['data.plan.product']
+      });
+      isPremium = subscriptions.data.length > 0;
     }
 
     if (!customer) {
