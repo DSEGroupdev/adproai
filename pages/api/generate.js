@@ -60,11 +60,23 @@ export default async function handler(req, res) {
     });
 
     // If no customer found, try to find by email
+    let customer = null;
     if (customers.data.length === 0 && user.email) {
       customers = await stripe.customers.search({
         query: `email:'${user.email}'`,
         limit: 1
       });
+      if (customers.data.length > 0) {
+        // Always update metadata to ensure clerkUserId is set
+        await stripe.customers.update(customers.data[0].id, {
+          metadata: { ...customers.data[0].metadata, clerkUserId: userId }
+        });
+        console.log('Updated customer metadata with clerkUserId:', userId);
+        // Refetch the customer to get the updated metadata
+        customer = await stripe.customers.retrieve(customers.data[0].id);
+      }
+    } else if (customers.data.length > 0) {
+      customer = customers.data[0];
     }
 
     console.log('Stripe customers found:', {
@@ -74,9 +86,9 @@ export default async function handler(req, res) {
     });
 
     let isPremium = false;
-    if (customers.data.length > 0) {
+    if (customer) {
       const subscriptions = await stripe.subscriptions.list({
-        customer: customers.data[0].id,
+        customer: customer.id,
         status: 'active'
       });
 
@@ -88,14 +100,6 @@ export default async function handler(req, res) {
       });
 
       isPremium = subscriptions.data.length > 0;
-
-      // If we found a subscription but no customer metadata, update the customer
-      if (isPremium && !customers.data[0].metadata?.clerkUserId) {
-        await stripe.customers.update(customers.data[0].id, {
-          metadata: { clerkUserId: userId }
-        });
-        console.log('Updated customer metadata with clerkUserId:', userId);
-      }
     }
 
     console.log('Subscription status:', {
