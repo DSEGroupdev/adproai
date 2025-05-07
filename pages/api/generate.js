@@ -20,15 +20,25 @@ export default async function handler(req, res) {
   try {
     const { userId } = getAuth(req);
     if (!userId) {
+      console.log('No user ID found in request');
       return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    console.log('Processing request for user:', userId);
 
     // Get or create user in our database
     let user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
+    console.log('Database user:', {
+      exists: !!user,
+      plan: user?.plan,
+      adsGenerated: user?.adsGenerated
+    });
+
     if (!user) {
+      console.log('Creating new user in database');
       user = await prisma.user.create({
         data: {
           id: userId,
@@ -41,9 +51,15 @@ export default async function handler(req, res) {
     }
 
     // Check Stripe subscription status
+    console.log('Checking Stripe subscription for user:', userId);
     const customers = await stripe.customers.search({
       query: `metadata['clerkUserId']:'${userId}'`,
       limit: 1
+    });
+
+    console.log('Stripe customers found:', {
+      count: customers.data.length,
+      customerIds: customers.data.map(c => c.id)
     });
 
     let isPremium = false;
@@ -52,11 +68,25 @@ export default async function handler(req, res) {
         customer: customers.data[0].id,
         status: 'active'
       });
+
+      console.log('Stripe subscriptions:', {
+        count: subscriptions.data.length,
+        subscriptionIds: subscriptions.data.map(s => s.id),
+        statuses: subscriptions.data.map(s => s.status)
+      });
+
       isPremium = subscriptions.data.length > 0;
     }
 
+    console.log('Subscription status:', {
+      isPremium,
+      currentPlan: user.plan,
+      needsUpdate: isPremium && user.plan !== 'PREMIUM'
+    });
+
     // Update user's plan based on Stripe subscription
     if (isPremium && user.plan !== 'PREMIUM') {
+      console.log('Updating user plan to PREMIUM');
       user = await prisma.user.update({
         where: { id: userId },
         data: { plan: 'PREMIUM' }
@@ -66,7 +96,19 @@ export default async function handler(req, res) {
     // Check ad generation limits
     const limit = isPremium ? PREMIUM_TIER_LIMIT : FREE_TIER_LIMIT;
     
+    console.log('Ad generation limits:', {
+      isPremium,
+      limit,
+      currentUsage: user.adsGenerated,
+      remaining: limit - user.adsGenerated
+    });
+
     if (user.adsGenerated >= limit) {
+      console.log('Ad limit reached:', {
+        limit,
+        currentUsage: user.adsGenerated,
+        plan: isPremium ? 'PREMIUM' : 'FREE'
+      });
       return res.status(403).json({
         error: 'ad_limit_reached',
         message: `You have reached your monthly ad generation limit (${limit} ads)`,
