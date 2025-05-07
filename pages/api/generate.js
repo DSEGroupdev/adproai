@@ -1,10 +1,13 @@
 import { getAuth } from "@clerk/nextjs/server";
 import prisma from '../../lib/prisma';
 import OpenAI from 'openai';
+import Stripe from 'stripe';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const FREE_TIER_LIMIT = 3;
 const PREMIUM_TIER_LIMIT = 100;
@@ -37,15 +40,37 @@ export default async function handler(req, res) {
       });
     }
 
+    // Check Stripe subscription status
+    const customers = await stripe.customers.search({
+      query: `metadata['clerkUserId']:'${userId}'`,
+      limit: 1
+    });
+
+    let isPremium = false;
+    if (customers.data.length > 0) {
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customers.data[0].id,
+        status: 'active'
+      });
+      isPremium = subscriptions.data.length > 0;
+    }
+
+    // Update user's plan based on Stripe subscription
+    if (isPremium && user.plan !== 'PREMIUM') {
+      user = await prisma.user.update({
+        where: { id: userId },
+        data: { plan: 'PREMIUM' }
+      });
+    }
+
     // Check ad generation limits
-    const isFreeTier = user.plan === 'FREE';
-    const limit = isFreeTier ? FREE_TIER_LIMIT : PREMIUM_TIER_LIMIT;
+    const limit = isPremium ? PREMIUM_TIER_LIMIT : FREE_TIER_LIMIT;
     
     if (user.adsGenerated >= limit) {
       return res.status(403).json({
         error: 'ad_limit_reached',
         message: `You have reached your monthly ad generation limit (${limit} ads)`,
-        currentPlan: user.plan
+        currentPlan: isPremium ? 'PREMIUM' : 'FREE'
       });
     }
 
