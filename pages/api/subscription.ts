@@ -73,7 +73,7 @@ export default async function handler(
     const product = subscriptionItem.price.product as Stripe.Product;
 
     // Calculate usage with type assertion for the API method
-    const usageRecords = await (stripe.subscriptionItems.listUsageRecordSummaries as any)(
+    const usageRecords = await (stripe.subscriptionItems as any).listUsageRecordSummaries(
       subscriptionItem.id,
       { limit: 1 }
     );
