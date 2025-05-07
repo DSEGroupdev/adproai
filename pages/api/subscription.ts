@@ -8,13 +8,16 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Stripe configuration is missing');
 }
 
+// Log environment variables (without exposing sensitive data)
 console.log('Environment check:', {
   hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
   hasAppUrl: !!process.env.NEXT_PUBLIC_APP_URL,
   appUrl: process.env.NEXT_PUBLIC_APP_URL
 });
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2025-03-31.basil'
+});
 
 export default async function handler(
   req: NextApiRequest,
@@ -65,18 +68,18 @@ export default async function handler(
       });
     }
 
-    const subscription = subscriptions.data[0] as Stripe.Subscription & {
-      plan: Stripe.Plan & { product: Stripe.Product }
-    };
-    const product = subscription.plan.product;
+    const subscription = subscriptions.data[0];
+    const subscriptionItem = subscription.items.data[0];
+    const product = subscriptionItem.price.product as Stripe.Product;
 
-    // Calculate usage
-    const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
-      subscription.items.data[0].id
+    // Calculate usage with type assertion for the API method
+    const usageRecords = await (stripe.subscriptionItems.listUsageRecordSummaries as any)(
+      subscriptionItem.id,
+      { limit: 1 }
     );
 
     const totalUsage = Number(usageRecords.data[0]?.total_usage || 0);
-    const limit = Number(subscription.plan.metadata?.adsLimit || 100);
+    const limit = Number(subscription.metadata?.adsLimit || 100);
     const remaining = Math.max(0, limit - totalUsage);
 
     console.log('Subscription details:', {
