@@ -24,9 +24,22 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Processing webhook event:', {
+      type: event.type,
+      id: event.id,
+      created: new Date(event.created * 1000).toISOString()
+    });
+
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
+        console.log('Checkout session completed:', {
+          sessionId: session.id,
+          customerId: session.customer,
+          metadata: session.metadata,
+          subscriptionId: session.subscription
+        });
+
         const { clerkUserId } = session.metadata;
 
         if (!clerkUserId) {
@@ -34,11 +47,13 @@ export default async function handler(req, res) {
           return res.status(400).json({ error: 'Missing clerkUserId in session metadata' });
         }
 
-        // Create or update customer with clerkUserId
-        const customer = await stripe.customers.create({
-          metadata: {
-            clerkUserId: clerkUserId
-          }
+        // Get the subscription details
+        const subscription = await stripe.subscriptions.retrieve(session.subscription);
+        console.log('Subscription details:', {
+          id: subscription.id,
+          status: subscription.status,
+          customerId: subscription.customer,
+          currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString()
         });
 
         // Update user's plan to PREMIUM
@@ -49,7 +64,8 @@ export default async function handler(req, res) {
 
         console.log('Updated user plan to PREMIUM:', {
           clerkUserId,
-          customerId: customer.id
+          customerId: session.customer,
+          subscriptionId: session.subscription
         });
 
         break;
@@ -57,6 +73,13 @@ export default async function handler(req, res) {
       case 'customer.subscription.deleted':
       case 'customer.subscription.cancelled': {
         const subscription = event.data.object;
+        console.log('Subscription cancelled/deleted:', {
+          subscriptionId: subscription.id,
+          customerId: subscription.customer,
+          status: subscription.status,
+          cancelledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null
+        });
+
         const customer = await stripe.customers.retrieve(subscription.customer);
         const { clerkUserId } = customer.metadata;
 
@@ -69,7 +92,8 @@ export default async function handler(req, res) {
 
           console.log('Updated user plan to FREE:', {
             clerkUserId,
-            customerId: customer.id
+            customerId: customer.id,
+            subscriptionId: subscription.id
           });
         }
 
@@ -79,7 +103,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ received: true });
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('Error processing webhook:', {
+      message: error.message,
+      type: error.type,
+      stack: error.stack
+    });
     return res.status(500).json({ error: 'Error processing webhook' });
   }
 } 
